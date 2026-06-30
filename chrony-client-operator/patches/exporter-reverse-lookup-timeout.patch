@@ -1,0 +1,24 @@
+diff --git a/collector/collector.go b/collector/collector.go
+index e05e15b..c7b05cd 100644
+--- a/collector/collector.go
++++ b/collector/collector.go
+@@ -14,6 +14,7 @@
+ package collector
+ 
+ import (
++	"context"
+ 	"fmt"
+ 	"log/slog"
+ 	"net"
+@@ -210,7 +211,10 @@ func (e Exporter) dnsLookup(logger *slog.Logger, address net.IP) string {
+ 	if !e.dnsLookups {
+ 		return address.String()
+ 	}
+-	names, err := net.LookupAddr(address.String())
++	var r net.Resolver
++	ctx, cancel := context.WithTimeout(context.Background(), 250*time.Millisecond)
++	defer cancel()
++	names, err := r.LookupAddr(ctx, address.String())
+ 	if err != nil || len(names) < 1 {
+ 		return address.String()
+ 	}

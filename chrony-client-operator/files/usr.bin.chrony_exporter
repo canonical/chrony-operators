@@ -1,0 +1,16 @@
+#include <tunables/global>
+
+/usr/bin/chrony_exporter flags=(attach_disconnected) {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  capability net_bind_service,
+
+  @{run}/chrony/{,*} rw,
+
+  /usr/bin/chrony_exporter r,
+
+  @{PROC}/*/limits r,
+  @{PROC}/*/stat r,
+  @{PROC}/sys/net/core/somaxconn r,
+}

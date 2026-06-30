@@ -1,0 +1,83 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+name: chrony
+title: Chrony Charm
+summary: Chrony NTP server charm.
+links:
+  issues: https://github.com/canonical/chrony-operator/issues
+  source: https://github.com/canonical/chrony-operator
+  contact: https://launchpad.net/~canonical-is-devops
+
+description: |
+  A [Juju](https://juju.is/) [charm](https://juju.is/docs/olm/charmed-operators) 
+  for deploying and managing the [Chrony](https://chrony-project.org) NTP server 
+  in your systems.
+  
+  This charm simplifies the configuration and maintenance of `chrony` across a 
+  range of environments, enabling basic time provision and synchronization with 
+  NTP servers.
+
+type: charm
+
+config:
+  options:
+    server-name:
+      description: >-
+        This configuration specifies the server name for the Chrony server. 
+        The charm will use this server name to request TLS certificates for enabling Network Time Security (NTS).
+        A wildcard certificate will be requests to cover all subdomains of this server name, 
+        allowing each unit to announce itself individually.
+        For instance, if "example.com" is provided as the server name, 
+        the charm will request a certificate with `DNS:*.example.com, DNS:example.com` as subject alternative names. 
+        IP addresses should not be used as the server name.
+      type: string
+    sources:
+      description: >-
+        Time sources for the Chrony server are specified as a comma-separated list of URLs.
+        Currently, the Chrony charm supports using only another NTP server as the time source.
+        The format for NTP source URLs is as follows: `ntp://host[:port][?options]`, where the options is the same with 
+        Chrony pool configuration settings (https://chrony-project.org/doc/4.5/chrony.conf.html).
+        For NTP sources that support NTS, the URL format is: `nts://host[:nts-ke-port][?options]`. 
+        The options for NTS URLs are the same as those for NTP sources.
+        Here are some examples of supported sources:
+        `ntp://ntp.example.com`
+        `ntp://ntp.example.com:1234`
+        `ntp://ntp.example.com?iburst=true&maxsources=2`
+        `nts://ntp.example.com`
+      type: string
+      default: ""
+    nts-certificates:
+      description: >-
+        A comma-separated list of juju secret IDs for enabling NTS with. 
+        Each juju secret ID must be a juju secret URI (i.e. start with `secret:`). 
+        The secret must include two fields: the `cert` field, which contains the PEM-encoded TLS certificate, 
+        and the `key` field, which contains an unencrypted PEM-encoded TLS key. 
+        You can create and grant access to the secret using the `juju add-secret` and `juju grant-secret` commands.
+        For instance:
+        `juju add-secret my-tls-cert cert#file=/path/to/fullchain.pem key#file=/path/to/key.pem`
+        `juju grant-secret my-tls-cert chrony`
+      type: string
+      default: ""
+
+requires:
+  nts-certificates:
+    interface: tls-certificates
+    limit: 1
+
+provides:
+  cos-agent:
+    interface: cos_agent
+
+base: ubuntu@24.04
+build-base: ubuntu@24.04
+platforms:
+  amd64:
+parts:
+  charm:
+    source: .
+    plugin: uv
+    build-snaps:
+    - astral-uv
+assumes:
+  - juju >= 3.3
