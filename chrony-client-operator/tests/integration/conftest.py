@@ -13,7 +13,12 @@ from opcli.pytest_plugin import CharmPathList
 @pytest.fixture(name="chrony_client_charm_file", scope="session")
 def chrony_client_charm_file_fixture(charm_paths: dict[str, CharmPathList]):
     """Get the chrony-client charm file built for the 24.04 base."""
-    return charm_paths["chrony-client"]["ubuntu@24.04"]
+    charms = list(charm_paths["chrony-client"])
+    # Select the 24.04 based charm; fall back to the only available build.
+    for charm in charms:
+        if "24.04" in charm:
+            return charm
+    return charms[0]
 
 
 @pytest.fixture(name="juju", scope="module")

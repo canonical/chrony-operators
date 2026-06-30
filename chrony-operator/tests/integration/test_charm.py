@@ -16,6 +16,11 @@ from tests.integration.utils import gen_tls_certificate, get_sans, get_tls_certi
 logger = logging.getLogger(__name__)
 
 
+def _active_and_idle(status: jubilant.Status) -> bool:
+    """Return True when all applications are active and all agents are idle."""
+    return jubilant.all_active(status) and jubilant.all_agents_idle(status)
+
+
 def test_build_and_deploy(juju: jubilant.Juju, chrony_app: str):
     """
     arrange: set up the chrony charm with a specific NTP source configuration.
@@ -23,7 +28,7 @@ def test_build_and_deploy(juju: jubilant.Juju, chrony_app: str):
     assert: ensure the application transitions to 'active' status after deployment.
     """
     juju.config(chrony_app, {"sources": "ntp://ntp.ubuntu.com"})
-    juju.wait(jubilant.all_active)
+    juju.wait(_active_and_idle)
 
 
 @pytest.mark.usefixtures("chrony_app")
@@ -57,13 +62,13 @@ def test_nts_certificates_integration(
 
     juju.config(chrony_app, {"server-name": "example.com", "sources": "ntp://ntp.ubuntu.com"})
     juju.integrate(chrony_app, self_signed_certificates_app)
-    juju.wait(jubilant.all_active)
+    juju.wait(_active_and_idle)
     for unit_ip in get_unit_ips():
         cert = get_tls_certificates(unit_ip, cadata=ca_cert, server_name="example.com")
         assert sorted(get_sans(cert)) == sorted(["example.com", "*.example.com"])
 
     juju.config(chrony_app, {"server-name": "example.net"})
-    juju.wait(jubilant.all_active)
+    juju.wait(_active_and_idle)
     for unit_ip in get_unit_ips():
         cert = get_tls_certificates(unit_ip, cadata=ca_cert, server_name="example.net")
         assert sorted(get_sans(cert)) == sorted(["example.net", "*.example.net"])
@@ -85,7 +90,7 @@ def test_nts_certificates_configuration(
     juju.config(
         chrony_app, {"nts-certificates": str(secret_uri), "sources": "ntp://ntp.ubuntu.com"}
     )
-    juju.wait(jubilant.all_active)
+    juju.wait(_active_and_idle)
     for unit_ip in get_unit_ips():
         remote_cert = get_tls_certificates(
             unit_ip, cadata=cert.cert_pem, server_name=cert.server_name
@@ -94,7 +99,7 @@ def test_nts_certificates_configuration(
 
     cert = gen_tls_certificate("config.test.org")
     juju.update_secret("test-cert", {"cert": cert.cert_pem, "key": cert.key_pem})
-    juju.wait(jubilant.all_active)
+    juju.wait(_active_and_idle)
     for unit_ip in get_unit_ips():
         remote_cert = get_tls_certificates(
             unit_ip, cadata=cert.cert_pem, server_name=cert.server_name
