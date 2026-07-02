@@ -62,13 +62,13 @@ def test_nts_certificates_integration(
 
     juju.config(chrony_app, {"server-name": "example.com", "sources": "ntp://ntp.ubuntu.com"})
     juju.integrate(chrony_app, self_signed_certificates_app)
-    juju.wait(_active_and_idle)
+    juju.wait(_active_and_idle, delay=2, successes=30)
     for unit_ip in get_unit_ips():
         cert = get_tls_certificates(unit_ip, cadata=ca_cert, server_name="example.com")
         assert sorted(get_sans(cert)) == sorted(["example.com", "*.example.com"])
 
     juju.config(chrony_app, {"server-name": "example.net"})
-    juju.wait(_active_and_idle)
+    juju.wait(_active_and_idle, delay=2, successes=30)
     for unit_ip in get_unit_ips():
         cert = get_tls_certificates(unit_ip, cadata=ca_cert, server_name="example.net")
         assert sorted(get_sans(cert)) == sorted(["example.net", "*.example.net"])
@@ -90,7 +90,7 @@ def test_nts_certificates_configuration(
     juju.config(
         chrony_app, {"nts-certificates": str(secret_uri), "sources": "ntp://ntp.ubuntu.com"}
     )
-    juju.wait(_active_and_idle)
+    juju.wait(_active_and_idle, delay=2, successes=30)
     for unit_ip in get_unit_ips():
         remote_cert = get_tls_certificates(
             unit_ip, cadata=cert.cert_pem, server_name=cert.server_name
@@ -99,7 +99,7 @@ def test_nts_certificates_configuration(
 
     cert = gen_tls_certificate("config.test.org")
     juju.update_secret("test-cert", {"cert": cert.cert_pem, "key": cert.key_pem})
-    juju.wait(_active_and_idle)
+    juju.wait(_active_and_idle, delay=2, successes=30)
     for unit_ip in get_unit_ips():
         remote_cert = get_tls_certificates(
             unit_ip, cadata=cert.cert_pem, server_name=cert.server_name

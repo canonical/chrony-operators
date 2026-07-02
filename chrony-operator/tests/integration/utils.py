@@ -71,7 +71,7 @@ def gen_tls_certificate(server_name: str):
 
 
 def get_tls_certificates(
-    host, port=4460, server_name=None, verify=True, cadata=None, timeout=60.0
+    host, port=4460, server_name=None, verify=True, cadata=None, timeout=180.0
 ) -> cryptography.x509.Certificate:
     """Retrieve the TLS certificate from a specified TLS server.
 
