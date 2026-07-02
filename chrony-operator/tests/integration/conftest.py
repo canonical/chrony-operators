@@ -60,7 +60,11 @@ def chrony_app_fixture(juju: jubilant.Juju, charm_paths: dict[str, CharmPathList
 @pytest.fixture(scope="module", name="self_signed_certificates_app")
 def self_signed_certificates_app_fixture(juju: jubilant.Juju) -> str:
     """Deploy the self-signed-certificates charm and return its application name."""
-    juju.deploy("self-signed-certificates", app=SELF_SIGNED_CERTIFICATES_APP)
+    juju.deploy(
+        "self-signed-certificates",
+        app=SELF_SIGNED_CERTIFICATES_APP,
+        channel="latest/stable",
+    )
     juju.wait(jubilant.all_agents_idle, timeout=JUJU_WAIT_TIMEOUT)
     return SELF_SIGNED_CERTIFICATES_APP
 
