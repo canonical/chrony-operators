@@ -98,9 +98,7 @@ def get_tls_certificates(
                 return cryptography.x509.load_der_x509_certificate(
                     typing.cast(bytes, ssock.getpeercert(binary_form=True))
                 )
-        except ssl.SSLCertVerificationError:
-            raise
-        except OSError:
+        except Exception:
             if time.monotonic() >= deadline:
                 raise
             time.sleep(2)
