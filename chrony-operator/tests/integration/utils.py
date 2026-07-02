@@ -7,6 +7,7 @@ import collections
 import datetime
 import socket
 import ssl
+import time
 import typing
 
 import cryptography.hazmat.primitives.asymmetric.ec
@@ -70,9 +71,16 @@ def gen_tls_certificate(server_name: str):
 
 
 def get_tls_certificates(
-    host, port=4460, server_name=None, verify=True, cadata=None
+    host, port=4460, server_name=None, verify=True, cadata=None, timeout=60.0
 ) -> cryptography.x509.Certificate:
-    """Retrieve the TLS certificate from a specified TLS server."""
+    """Retrieve the TLS certificate from a specified TLS server.
+
+    Transient connection failures are retried until *timeout* seconds elapse.
+    chrony restarts its NTS-KE server asynchronously after a config change, so
+    the port may briefly refuse connections or drop the TLS handshake even once
+    the Juju unit reports active/idle. Certificate verification failures are not
+    transient and are raised immediately without retrying.
+    """
     context = ssl.create_default_context(cadata=cadata)
     # Enforce secure TLS versions only (TLS 1.2 and above)
     context.minimum_version = ssl.TLSVersion.TLSv1_2
@@ -80,14 +88,22 @@ def get_tls_certificates(
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
     server_name = host if server_name is None else server_name
-    with (
-        socket.create_connection((host, port)) as sock,
-        context.wrap_socket(sock, server_hostname=server_name) as ssock,
-    ):
-        cert = cryptography.x509.load_der_x509_certificate(
-            typing.cast(bytes, ssock.getpeercert(binary_form=True))
-        )
-        return cert
+    deadline = time.monotonic() + timeout
+    while True:
+        try:
+            with (
+                socket.create_connection((host, port), timeout=30) as sock,
+                context.wrap_socket(sock, server_hostname=server_name) as ssock,
+            ):
+                return cryptography.x509.load_der_x509_certificate(
+                    typing.cast(bytes, ssock.getpeercert(binary_form=True))
+                )
+        except ssl.SSLCertVerificationError:
+            raise
+        except OSError:
+            if time.monotonic() >= deadline:
+                raise
+            time.sleep(2)
 
 
 def get_sans(certificate: cryptography.x509.Certificate) -> list[str]:
