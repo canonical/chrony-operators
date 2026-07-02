@@ -55,17 +55,12 @@ def juju_fixture(request: pytest.FixtureRequest) -> typing.Generator[jubilant.Ju
 @pytest.fixture(name="deploy_charms", scope="module")
 def deploy_charms_fixture(juju: jubilant.Juju, chrony_client_charm_file: str):
     """Deploy charms fixture deploy all charms necessary for the integration test."""
-    juju.deploy(
-        charm="ubuntu",
-        base="ubuntu@24.04",
-        constraints={"virt-type": "virtual-machine"},
-    )
+    juju.deploy(charm="ubuntu", base="ubuntu@24.04")
     juju.deploy(charm=chrony_client_charm_file)
     juju.deploy(
         charm="chrony",
         config={"sources": "ntp://ntp.ubuntu.com?iburst=true&maxsources=4"},
         channel="latest/edge",
-        constraints={"virt-type": "virtual-machine"},
     )
     juju.integrate("ubuntu", "chrony-client")
     juju.wait(jubilant.all_active, timeout=20 * 60)
