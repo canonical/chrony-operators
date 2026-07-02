@@ -175,4 +175,5 @@ def another_chrony_client_app(
 
     yield App(juju=juju, name=name)
 
-    juju.remove_application(name)
+    juju.remove_application(name, force=True)
+    juju.wait(lambda status: name not in status.apps, timeout=20 * 60)
