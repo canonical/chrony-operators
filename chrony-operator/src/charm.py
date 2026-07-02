@@ -105,8 +105,27 @@ class ChronyCharm(ops.CharmBase):
         Args:
             event: certificate-available event object.
         """
-        self.tls_keychain.set_chain(event.chain_as_pem().strip())
+        self.tls_keychain.set_chain(
+            "\n\n".join(self._order_certificate_chain(event.certificate, event.chain)).strip()
+        )
         self._configure_chrony()
+
+    @staticmethod
+    def _order_certificate_chain(certificate: str, chain: list[str]) -> list[str]:
+        """Order a certificate chain so the leaf (server) certificate comes first.
+
+        Args:
+            certificate: The issued (leaf) certificate as a PEM string.
+            chain: The certificate chain as a list of PEM strings.
+
+        Returns:
+            The certificate chain ordered with the leaf certificate first.
+        """
+        ordered = [cert.strip() for cert in chain]
+        leaf = certificate.strip()
+        if len(ordered) > 1 and ordered[0] != leaf and ordered[-1] == leaf:
+            ordered.reverse()
+        return ordered
 
     def _renew_certificate(self) -> None:
         """Renew the certificate.
