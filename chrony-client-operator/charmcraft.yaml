@@ -1,0 +1,89 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+name: chrony-client
+title: Chrony Client Charm
+summary: Chrony NTP client charm.
+links:
+  issues: https://github.com/canonical/chrony-client-operator/issues
+  source: https://github.com/canonical/chrony-client-operator
+  contact: https://launchpad.net/~canonical-is-devops
+
+description: |
+  A [Juju](https://juju.is/) [charm](https://juju.is/docs/olm/charmed-operators) 
+  for deploying and managing the [Chrony](https://chrony-project.org) NTP server 
+  in your systems.
+  
+  This charm simplifies the configuration and maintenance of `chrony` as a
+  NTP client.
+
+type: charm
+subordinate: true
+
+config:
+  options:
+    sources:
+      description: >-
+        Time sources for the Chrony server are specified as a comma-separated list of URLs.
+        Currently, the Chrony charm supports using only another NTP server as the time source.
+        The format for NTP source URLs is as follows: `ntp://host[:port][?options]`, where the options are the same as 
+        Chrony pool configuration settings (https://chrony-project.org/doc/4.5/chrony.conf.html).
+        For NTP sources that support NTS, the URL format is: `nts://host[:nts-ke-port][?options]`. 
+        The options for NTS URLs are the same as those for NTP sources.
+        Here are some examples of supported sources:
+        `ntp://ntp.example.com`
+        `ntp://ntp.example.com:1234`
+        `ntp://ntp.example.com?iburst=true&maxsources=2`
+        `nts://ntp.example.com`
+      type: string
+      default: |-
+        ntp://ntp.ubuntu.com?iburst=true&maxsources=4,
+        ntp://0.ubuntu.pool.ntp.org?iburst=true&maxsources=1,
+        ntp://1.ubuntu.pool.ntp.org?iburst=true&maxsources=1,
+        ntp://2.ubuntu.pool.ntp.org?iburst=true&maxsources=2
+
+requires:
+  juju-info:
+    interface: juju-info
+    scope: container
+
+provides:
+  cos-agent:
+    interface: cos_agent
+
+platforms:
+  ubuntu@24.04:amd64:
+  ubuntu@22.04:amd64:
+
+parts:
+  charm:
+    source: .
+    plugin: uv
+    build-snaps:
+      - astral-uv
+  files:
+    source: .
+    plugin: dump
+    stage:
+      - files
+  changelog:
+    source: ./docs
+    plugin: dump
+    stage:
+      - changelog.md
+  patches:
+    source: ./patches
+    plugin: nil
+  chrony-exporter:
+    after: [ patches ]
+    source: https://github.com/SuperQ/chrony_exporter.git
+    source-type: git
+    source-tag: v0.13.3
+    plugin: go
+    build-environment:
+      - CGO_ENABLED: "0"
+    build-snaps:
+      - go
+    override-build: |
+      git apply "$CRAFT_PROJECT_DIR/patches/exporter-reverse-lookup-timeout.patch"
+      craftctl default

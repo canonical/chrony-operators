@@ -1,0 +1,13 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+juju:
+  channel: 3.6/stable
+  model-defaults:
+    test-mode: "true"
+    automatically-retry-hooks: "false"
+
+providers:
+  lxd:
+    enable: true
+    bootstrap: true

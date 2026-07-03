@@ -1,0 +1,13 @@
+[Unit]
+Description=Prometheus Chrony Exporter
+After=chrony.service
+Wants=chrony.service
+
+[Service]
+User=_chrony
+Group=_chrony
+ExecStart=/usr/bin/chrony_exporter --chrony.address=unix:///run/chrony/chronyd.sock --collector.tracking --collector.sources --collector.serverstats --web.listen-address=127.0.0.1:9123
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

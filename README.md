@@ -1,77 +1,18 @@
-<!--
-Avoid using this README file for information that is maintained or published elsewhere, e.g.:
-
-* metadata.yaml > published on Charmhub
-* documentation > published on (or linked to from) Charmhub
-* detailed contribution guide > documentation or CONTRIBUTING.md
-
-Use links instead.
--->
-# Platform engineering charm template
-<!-- Use this space for badges -->
-
-Describe your charm in 1-2 sentences. Include the software that the charm deploys (if applicable), and the substrate (VM/K8s).
-
-Like any Juju charm, this charm supports one-line deployment, configuration, integration, scaling, and more. For Charmed {Name}, this includes:
-* list or summary of app-specific features
-
-For information about how to deploy, integrate, and manage this charm, see the Official [platform-engineering-charm-template Documentation](external link).
-
-## Get started
-<!--If the charm already contains a relevant how-to guide or tutorial in its documentation,
-use this section to link the documentation. You don’t need to duplicate documentation here.
-If the tutorial is more complex than getting started, then provide brief descriptions of the
-steps needed for the simplest possible deployment. Make sure to include software and hardware
-prerequisites.
-
-This section could be structured in the following way:
-
-### Set up
-<Steps for setting up the environment (e.g. via Multipass)>
-
-### Deploy
-<Steps for deploying the charm>
-
--->
-
-### Basic operations
-<!--Brief walkthrough of performing standard configurations or operations.
-
-Use this section is to emphasize features or capabilities of the charm.
-Link to any relevant how-to guides here.
-
-Use this section to provide information on important actions, required configurations, or
-other operations the user should know about. You don’t need to list every action or configuration.
-Link the Charmhub documentation for actions and configurations if you write about them.
-
-You may also want to link to the `charmcraft.yaml` file here.
--->
-
-## Integrations (optional)
-<!-- Information about particularly relevant interfaces, endpoints or libraries related to the
-charm. For example, peer relation endpoints required by other charms for integration.
-
-Otherwise, include a link the Charmhub documentation on integrations.
---> 
-
-## Learn more
-<!-- 
-Provide a list of resources, including the official documentation, developer documentation,
-an official website for the software and a troubleshooting guide. Note that this list is not
-exhaustive or always relevant for every charm. If there is no official troubleshooting guide,
-include a link to the relevant Matrix channel.
--->
-
-* [Read more](charm docs) <!--Link to the charm's official documentation-->
-* [Developer documentation](developer docs) <!--Link to any developer documentation (could be upstream)-->
-* [Official webpage](official site) <!--(Optional) Link to official upstream webpage/blog/marketing content--> 
-* [Troubleshooting](link to troubleshooting docs) <!--(Optional) Link to a page or section about troubleshooting/FAQ-->
-
+# Chrony operators
+This repository provides a collection of operators related to the [Chrony](https://chrony-project.org) NTP service.
+This repository contains the code for the following charms:
+1. `chrony`: A machine charm that deploys and manages a Chrony NTP server. See the [chrony-operator README](chrony-operator/README.md) for more information.
+2. `chrony-client`: A subordinate machine charm that deploys and manages Chrony as an NTP client. See the [chrony-client-operator README](chrony-client-operator/README.md) for more information.
 ## Project and community
-* [Issues](github issues) <!--Link to GitHub issues (if applicable)-->
-* [Contributing](contribution guide) <!--Link to any contribution guides, preferably for the source code--> 
-* [Matrix](applicable link) <!--Link to contact info (if applicable), e.g. Matrix channel-->
-* [Launchpad](applicable link) <!--Link to Launchpad (if applicable)-->
-
-## Licensing and trademark (optional)
-
+The chrony-operators project is a member of the Ubuntu family. It is an open source project that warmly welcomes community projects, contributions, suggestions, fixes and constructive feedback.
+* [Code of conduct](https://ubuntu.com/community/code-of-conduct)
+* [Get support](https://discourse.charmhub.io/)
+* [Issues](https://github.com/canonical/chrony-operators/issues)
+* [Matrix](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
+* [Contribute](https://github.com/canonical/chrony-operators/blob/main/CONTRIBUTING.md)
+## Documentation
+Documentation for each charm is stored in its respective subdirectory's `docs` directory.
+It is based on the Canonical starter pack and, in structuring, the documentation employs the
+[Diataxis](https://diataxis.fr/) approach.
+You may open a pull request with your documentation changes, or you can
+[file a bug](https://github.com/canonical/chrony-operators/issues) to provide constructive feedback or suggestions.

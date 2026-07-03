@@ -1,26 +1,35 @@
-venv/
-build/
-*.charm
-.tox/
-.coverage
+**/venv/
+**/build/
+**/*.charm
+**/*.snap
+**/.tox/
+**/.coverage
 __pycache__/
-*.py[cod]
-.idea
-.vscode
-.mypy_cache
+**/*.py[cod]
+**/.idea
+**/.vscode
+**/.mypy_cache
+**/.ruff_cache
 *.egg-info/
 */*.rock
-terraform/tests/.terraform
-
+**/.venv/
 # BEGIN VALE WORKFLOW IGNORE
 .vale/styles/*
 !.vale/styles/local
 !.vale/styles/config/
-
 .vale/styles/config/*
 !.vale/styles/config/vocabularies/
-
 .vale/styles/config/vocabularies/*
 !.vale/styles/config/vocabularies/local
 # END VALE WORKFLOW IGNORE
+terraform/**/.terraform*
+terraform/**/.tfvars
+terraform/**/*.tfstate*
+# opcli/spread generated files
+.spread-reuse.*
+.spread-run-*/
+artifacts.build.yaml
+
+# local integration-test secrets loaded by opcli
+.secrets.env
 

@@ -1,0 +1,35 @@
+## Metrics
+
+- **`chrony_serverstats_authenticated_ntp_packets_total`**: The number of received NTP requests that were authenticated (with a symmetric key or NTS).
+- **`chrony_serverstats_client_log_records_dropped_total`**: The number of client log records dropped by the server to limit the memory use.
+- **`chrony_serverstats_command_packets_dropped_total`**: The number of command requests dropped by the server due to rate limiting.
+- **`chrony_serverstats_command_packets_received_total`**: The number of command requests received by the server.
+- **`chrony_serverstats_interleaved_ntp_packets_total`**: The number of received NTP requests that were detected to be in the interleaved mode.
+- **`chrony_serverstats_ntp_packets_dropped_total`**: The number of NTP requests dropped by the server due to rate limiting.
+- **`chrony_serverstats_ntp_packets_received_total`**: The number of valid NTP requests received by the server.
+- **`chrony_serverstats_ntp_timestamp_span_seconds`**: The interval (in seconds) covered by the currently held NTP timestamps.
+- **`chrony_serverstats_ntp_timestamps_held`**: The number of pairs of receive and transmit timestamps that the server is currently holding in memory for clients using the interleaved mode.
+- **`chrony_serverstats_nts_ke_connections_accepted_total`**: The number of NTS-KE connections accepted by the server.
+- **`chrony_serverstats_nts_ke_connections_dropped_total`**: The number of NTS-KE connections dropped by the server due to rate limiting.
+- **`chrony_sources_last_sample_age_seconds`**: Chrony sources last good sample age in seconds
+- **`chrony_sources_last_sample_error_margin_seconds`**: Chrony sources last sample margin of error in seconds
+- **`chrony_sources_last_sample_offset_seconds`**: Chrony sources last sample offset in seconds
+- **`chrony_sources_polling_interval_seconds`**: Chrony sources polling interval in seconds
+- **`chrony_sources_reachability_ratio`**: Chrony sources ratio of packet reachability
+- **`chrony_sources_reachability_success`**: Chrony sources last poll reachability success
+- **`chrony_sources_state_info`**: Chrony sources state info
+- **`chrony_sources_stratum`**: Chrony sources stratum numbers
+- **`chrony_tracking_frequency_ppms`**: Rate by which the system's clock would be wrong if chronyd was not correcting it, in PPMs
+- **`chrony_tracking_info`**: Chrony tracking info
+- **`chrony_tracking_last_offset_seconds`**: Chrony tracking last offset in seconds
+- **`chrony_tracking_reference_timestamp_seconds`**: Chrony tracking Reference timestamp
+- **`chrony_tracking_remote_reference`**: Chrony tracking is connected to a remote source
+- **`chrony_tracking_residual_frequency_ppms`**: For the currently selected reference source, the difference between the frequency it suggests and the one currently in use, in PPMs
+- **`chrony_tracking_rms_offset_seconds`**: Chrony tracking long-term average of the offset
+- **`chrony_tracking_root_delay_seconds`**: This is the total of the network path delays to the stratum-1 computer from which the computer is ultimately synchronised
+- **`chrony_tracking_root_dispersion_seconds`**: Chrony tracking total of all measurement errors to the NTP root
+- **`chrony_tracking_skew_ppms`**: The estimated error bound on the frequency, in PPMs
+- **`chrony_tracking_stratum`**: Chrony tracking client stratum
+- **`chrony_tracking_system_time_seconds`**: Chrony tracking System time
+- **`chrony_tracking_update_interval_seconds`**: The time elapsed since the last measurement from the reference source was processed, in seconds
+- **`chrony_up`**: Whether the chrony server is up.

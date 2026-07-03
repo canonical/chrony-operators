@@ -1,0 +1,37 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+project: chrony-operators
+path: /home/ubuntu/proj
+kill-timeout: 60m
+warn-timeout: 1m
+backends:
+  integration-test:
+    type: integration-test
+    systems:
+    - ubuntu-24.04:
+        runner: [self-hosted, linux, X64, noble, large]
+environment:
+  OPCLI_GIT_REF: '$(HOST: echo "${OPCLI_GIT_REF:-main}")'
+  CONCIERGE: concierge.yaml
+exclude:
+- .git
+- .tox
+- .venv
+- .*_cache
+integration-suites:
+  chrony-operator/tests/integration/:
+    summary: chrony charm integration tests
+    working-dir: chrony-operator/
+    backends:
+    - integration-test
+    systems: [ubuntu-24.04]
+    pytest-arguments-template: &default-pytest-args |
+      --model testing
+      --keep-models
+  chrony-client-operator/tests/integration/:
+    summary: chrony-client charm integration tests
+    working-dir: chrony-client-operator/
+    backends:
+    - integration-test
+    systems: [ubuntu-24.04]
+    pytest-arguments-template: *default-pytest-args

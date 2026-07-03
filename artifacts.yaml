@@ -1,0 +1,19 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+version: 1
+rocks: []
+charms:
+- name: chrony
+  charmcraft-yaml: chrony-operator/charmcraft.yaml
+  resources: {}
+  platforms:
+  - arch: amd64
+  channel: latest/edge
+- name: chrony-client
+  charmcraft-yaml: chrony-client-operator/charmcraft.yaml
+  resources: {}
+  platforms:
+  - arch: amd64
+  channel: latest/edge
+snaps: []
