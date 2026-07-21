@@ -1,2 +1,10 @@
 AI
+chrony
+Chrony
+Diataxis
+IPs
+PPMs
+reachability
 redeployments
+subdirectory's
+systemd
