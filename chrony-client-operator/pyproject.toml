@@ -16,10 +16,10 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "cosl==1.9.2",
+  "cosl==1.10.2",
   "jsonschema==4.26.0",
-  "opentelemetry-api==1.42.1",
-  "ops==3.7.1",
+  "opentelemetry-api==1.44.0",
+  "ops==3.8.0",
   "pydantic==2.13.4",
 ]
 
@@ -29,13 +29,13 @@ fmt = [
 ]
 lint = [
   "codespell",
-  "coverage[toml]==7.14.1",
-  "jubilant==1.10.0",
+  "coverage[toml]==7.15.2",
+  "jubilant==1.11.0",
   "mypy",
-  "ops[testing]==3.7.1",
+  "ops[testing]==3.8.0",
   "pep8-naming",
   "pytest",
-  "pytest==9.1.0",
+  "pytest==9.1.1",
   "pytest-asyncio",
   "requests",
   "ruff",
@@ -43,9 +43,9 @@ lint = [
   "types-requests",
 ]
 unit = [
-  "coverage[toml]==7.14.1",
-  "ops[testing]==3.7.1",
-  "pytest==9.1.0",
+  "coverage[toml]==7.15.2",
+  "ops[testing]==3.8.0",
+  "pytest==9.1.1",
 ]
 coverage-report = [
   "coverage[toml]",
@@ -55,9 +55,9 @@ static = [
   "bandit[toml]",
 ]
 integration = [
-  "jubilant==1.10.0",
+  "jubilant==1.11.0",
   "opcli @ git+https://github.com/canonical/charm-ci.git@v0.0.1-alpha.3 ; python_version >= '3.12'",
-  "pytest==9.1.0",
+  "pytest==9.1.1",
 ]
 
 [tool.uv]
