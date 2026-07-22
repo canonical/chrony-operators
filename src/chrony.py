@@ -5,13 +5,13 @@
 
 # check chrony.conf document for _PoolOptions attributes.
 
+import abc
 import collections
 import itertools
 import logging
 import os
 import pathlib
 import shutil
-import textwrap
 import typing
 import urllib.parse
 
@@ -34,6 +34,9 @@ _CHRONY_EXPORTER_FILES = {
     _FILES_DIR / "usr.bin.chrony_exporter": _CHRONY_EXPORTER_APPARMOR_FILE,
 }
 _CHRONY_EXPORTER_SERVICE_NAME = "prometheus-chrony-exporter"
+_LEGACY_EXPORTER_PACKAGE = "prometheus-chrony-exporter"
+_APT_SOURCES_DIR = pathlib.Path("/etc/apt/sources.list.d")
+_LEGACY_EXPORTER_PPA_SOURCES_GLOB = "canonical-is-devops-ubuntu-chrony-charm-*"
 
 
 class _PoolOptions(pydantic.BaseModel):
@@ -182,6 +185,52 @@ TimeSource = _NtpSource | _NtsSource
 TlsKeyPair = collections.namedtuple("TlsKeyPair", ["certificate", "key"])
 
 
+class ChronyConfigBase(abc.ABC):
+    """Chrony configuration file control."""
+
+    def __init__(
+        self,
+        chrony: "Chrony",
+        sources: list[TimeSource],
+        header: str = "",
+        tls_key_pairs: list[TlsKeyPair] | None = None,
+    ) -> None:
+        """Initialize chrony configuration object.
+
+        Args:
+            chrony: Chrony controller.
+            sources: List of chrony time sources.
+            header: Optional header in the configuration file.
+            tls_key_pairs: List of TLS key pairs.
+
+        Raises:
+            ValueError: If no sources are provided.
+        """
+        if not sources:
+            raise ValueError("No time sources provided")
+        self._chrony = chrony
+        self._sources = sources
+        self._header = header
+        self._tls_key_pairs = tls_key_pairs if tls_key_pairs else []
+
+    @property
+    def tls_key_pairs(self) -> list[TlsKeyPair]:
+        """The TLS key pairs of the configuration.
+
+        Returns:
+            The list of TLS key pairs.
+        """
+        return self._tls_key_pairs
+
+    @abc.abstractmethod
+    def render(self) -> str:
+        """Generate the chrony configuration file content.
+
+        Returns:
+            Generated chrony configuration file content.
+        """
+
+
 class Chrony:
     """Chrony service manager."""
 
@@ -215,6 +264,21 @@ class Chrony:
             self._install_chrony_exporter()
         else:
             self._upgrade_chrony_exporter()
+
+    def remove_legacy_ppa_exporter(self) -> None:  # pragma: nocover
+        """Remove the legacy PPA and the chrony exporter it installed.
+
+        Earlier revisions of the chrony charm installed the
+        prometheus-chrony-exporter package from the ppa:canonical-is-devops/chrony-charm PPA.
+        The exporter is now bundled with the charm, so the legacy package and PPA are removed
+        before installing the bundled exporter when upgrading from those revisions.
+        """
+        apt.remove_package(_LEGACY_EXPORTER_PACKAGE)
+        legacy_sources = list(_APT_SOURCES_DIR.glob(_LEGACY_EXPORTER_PPA_SOURCES_GLOB))
+        if legacy_sources:
+            for source in legacy_sources:
+                source.unlink(missing_ok=True)
+            apt.update()
 
     def uninstall(self) -> None:
         """Uninstall installed packages from the system.
@@ -304,9 +368,14 @@ class Chrony:
     def read_tls_key_pairs(self) -> list[TlsKeyPair]:
         """Read TLS key pairs from the certificates directory.
 
+        If the certificates directory does not exist, no key pairs are read and the directory
+        is not created.
+
         Returns:
             A list of TlsKeyPair objects.
         """
+        if not self.CERTS_DIR.exists():
+            return []
         self._make_certs_dir()
         files = sorted(self._iter_certs_dir())
         key_pairs = []
@@ -339,11 +408,14 @@ class Chrony:
         """Write TLS key pairs to the certificates directory.
 
         Existing pairs are overwritten, and if more files exist than new key pairs provided,
-        the excess files are removed.
+        the excess files are removed. If there are no key pairs to write and the certificates
+        directory does not exist, the directory is not created.
 
         Args:
             key_pairs: A list of TlsKeyPair objects to write.
         """
+        if not key_pairs and not self.CERTS_DIR.exists():
+            return
         self._make_certs_dir()
         files = sorted(self._iter_certs_dir())
         for idx, (key_pair_files, key_pair) in enumerate(
@@ -387,36 +459,24 @@ class Chrony:
             return _NtsSource.from_source_url(url)
         raise ValueError(f"Invalid time source URL: {url}")
 
-    @staticmethod
-    def new_config(sources: list[TimeSource], header: str = "") -> str:
-        """Generate the chrony configuration file content.
+    def apply_config(self, config: ChronyConfigBase) -> None:
+        """Apply the new chrony configuration.
+
+        This function compares the current chrony configuration with a new configuration. If they
+        are the same, no changes are made. If they differ, the function updates the chrony
+        configuration file with the new settings and restarts the chrony service.
 
         Args:
-            header: Optional header in the configuration file.
-            sources: List of chrony time sources.
-
-        Returns:
-            Generated chrony configuration file content.
-
-        Raises:
-            ValueError: If no sources are provided.
+            config: The chrony configuration to apply.
         """
-        if not sources:
-            raise ValueError("No time sources provided")
-        sources_config = "\n".join(s.render() for s in sources)
-        static = textwrap.dedent("""\
-                sourcedir /run/chrony-dhcp
-                sourcedir /etc/chrony/sources.d
-                keyfile /etc/chrony/chrony.keys
-                driftfile /var/lib/chrony/chrony.drift
-                ntsdumpdir /var/lib/chrony
-                logdir /var/log/chrony
-                maxupdateskew 100.0
-                rtcsync
-                makestep 1 3
-                leapsectz right/UTC
-            """)
-        return "\n\n".join(part for part in [header, sources_config, static] if part).lstrip()
+        current_config = self.read_config()
+        current_certs = self.read_tls_key_pairs()
+        new_config = config.render()
+        if new_config != current_config or current_certs != config.tls_key_pairs:
+            logger.info("Chrony config changed, apply and restart chrony")
+            self.write_tls_key_pairs(config.tls_key_pairs)
+            self.write_config(new_config)
+            self.restart()
 
     def _install_chrony_exporter_files(self) -> None:
         """Install chrony_exporter files."""

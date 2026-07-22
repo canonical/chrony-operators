@@ -7,13 +7,24 @@
 
 """Unit tests."""
 
+import pathlib
 import textwrap
 
 import pytest
+import yaml
 from ops import testing
 
-import charm
 import chrony
+import chrony_client_charm as charm
+
+_CHARMCRAFT_META = yaml.safe_load(
+    (pathlib.Path(__file__).resolve().parents[2] / "chrony-client-charmcraft.yaml").read_text()
+)
+
+
+def _context() -> testing.Context:
+    """Build a scenario Context with the chrony-client charm metadata."""
+    return testing.Context(charm.ChronyClientCharm, meta=_CHARMCRAFT_META)
 
 
 @pytest.mark.parametrize(
@@ -115,7 +126,7 @@ def test_chrony_config(sources: str, valid: bool, source_config: str, mock_chron
     """
     mock_chrony.write_config("default")
 
-    ctx = testing.Context(charm.ChronyClientCharm)
+    ctx = _context()
     state_in = testing.State(
         config={"sources": sources},
         relations=[testing.SubordinateRelation(endpoint="juju-info", id=1)],
@@ -164,14 +175,14 @@ def test_chrony_uninstall(mock_chrony: chrony.Chrony):
     """
     mock_chrony.write_config("default")
 
-    ctx = testing.Context(charm.ChronyClientCharm)
+    ctx = _context()
     state_in = testing.State(
         config={"sources": "ntp://example.com"},
         relations=[testing.SubordinateRelation(endpoint="juju-info", id=1)],
     )
     ctx.run(ctx.on.config_changed(), state_in)
 
-    ctx = testing.Context(charm.ChronyClientCharm)
+    ctx = _context()
     state_in = testing.State(
         config={"sources": "ntp://example.com"},
         relations=[testing.SubordinateRelation(endpoint="juju-info", id=1)],
