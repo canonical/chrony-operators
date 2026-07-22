@@ -61,6 +61,9 @@ parts:
     plugin: uv
     build-snaps:
       - astral-uv
+    override-build: |
+      craftctl default
+      ln -sf chrony_client_charm.py "${CRAFT_PART_INSTALL}/src/charm.py"
   files:
     source: .
     plugin: dump

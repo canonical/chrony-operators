@@ -5,15 +5,26 @@
 
 import copy
 import json
+import pathlib
 import typing
 
 import pytest
+import yaml
 from charms.tls_certificates_interface.v3 import tls_certificates
 from ops.testing import CharmEvents, Context, Relation, Secret, State
 from scenario.context import _Event  # needed for custom events for now
 
-from src.charm import ChronyCharm
+from chrony_charm import ChronyCharm
 from tests.utils import get_csr_common_name
+
+_CHARMCRAFT_META = yaml.safe_load(
+    (pathlib.Path(__file__).resolve().parents[2] / "chrony-charmcraft.yaml").read_text()
+)
+
+
+def _context() -> Context:
+    """Build a scenario Context with the chrony charm metadata."""
+    return Context(ChronyCharm, meta=_CHARMCRAFT_META)
 
 
 @pytest.mark.usefixtures("mock_chrony")
@@ -24,7 +35,7 @@ def test_csr_created_after_nts_certificates_integration(mock_tls_keychain):
     assert: check if the CSR data is present in the relation's local unit data.
     """
     mock_tls_keychain.set_private_key(tls_certificates.generate_private_key().decode("ascii"))
-    ctx = Context(ChronyCharm)
+    ctx = _context()
     relation = Relation("nts-certificates")
     state_in = State(config={"server-name": "example.com"}, relations=[relation])
 
@@ -43,7 +54,7 @@ def test_csr_not_created_if_server_name_unset(mock_tls_keychain):
     assert: ensure that no certificate_signing_requests are created due to unset server-name.
     """
     mock_tls_keychain.set_private_key(tls_certificates.generate_private_key().decode("ascii"))
-    ctx = Context(ChronyCharm)
+    ctx = _context()
     relation = Relation("nts-certificates")
     state_in = State(relations=[relation])
 
@@ -62,7 +73,7 @@ def test_csr_created_after_server_name_set(mock_tls_keychain):
     assert: verify that certificate_signing_requests are generated.
     """
     mock_tls_keychain.set_private_key(tls_certificates.generate_private_key().decode("ascii"))
-    ctx = Context(ChronyCharm)
+    ctx = _context()
     relation = Relation("nts-certificates")
     state_in = State(config={"server-name": "example.com"}, relations=[relation])
 
@@ -85,7 +96,7 @@ def test_receive_certificate(mock_chrony, helper):
         local_unit_data=helper.get_local_unit_data(),
         remote_app_data=helper.get_remote_app_data(),
     )
-    ctx = Context(ChronyCharm)
+    ctx = _context()
     state_in = State(
         config={"server-name": "example.com", "sources": "ntp://example.com"}, relations=[relation]
     )
@@ -112,7 +123,7 @@ def test_server_name_reset_after_certificates(mock_chrony, helper):
         remote_app_data=helper.get_remote_app_data(),
     )
     secret = helper.get_tls_certificates_secret()
-    ctx = Context(ChronyCharm)
+    ctx = _context()
     state_in = State(
         config={"sources": "ntp://example.com"}, relations=[relation], secrets=[secret]
     )
@@ -141,7 +152,7 @@ def test_server_name_change_after_certificate_assigned(mock_chrony, helper):
         local_unit_data=helper.get_local_unit_data(),
         remote_app_data=helper.get_remote_app_data(),
     )
-    ctx = Context(ChronyCharm)
+    ctx = _context()
     state_in = State(
         config={"sources": "ntp://example.com", "server-name": "example.net"},
         relations=[relation],
@@ -170,7 +181,7 @@ def test_server_name_change_before_certificates_assigned(helper):
         "nts-certificates",
         local_unit_data=helper.get_local_unit_data(),
     )
-    ctx = Context(ChronyCharm)
+    ctx = _context()
     state_in = State(
         config={"sources": "ntp://example.com", "server-name": "example.net"},
         relations=[relation],
@@ -199,7 +210,7 @@ def test_certificate_expired(monkeypatch, helper):
         local_unit_data=copy.deepcopy(local_unit_data),
         remote_app_data=helper.get_remote_app_data(),
     )
-    ctx = Context(ChronyCharm)
+    ctx = _context()
     secret = helper.get_tls_certificates_secret()
     state_in = State(
         config={"sources": "ntp://example.com", "server-name": "example.net"},
@@ -231,7 +242,7 @@ def test_certificate_revoked(helper):
         local_unit_data=copy.deepcopy(local_unit_data),
         remote_app_data=helper.get_revoked_remote_app_data(),
     )
-    ctx = Context(ChronyCharm)
+    ctx = _context()
     secret = helper.get_tls_certificates_secret()
     state_in = State(
         config={"sources": "ntp://example.com", "server-name": "example.net"},
@@ -257,7 +268,7 @@ def test_remove_certificate_integration(mock_chrony, helper):
     """
     helper.write_server_name_and_csr()
     helper.write_chain()
-    ctx = Context(ChronyCharm)
+    ctx = _context()
     secret = helper.get_tls_certificates_secret()
     relation = Relation(
         "nts-certificates",
@@ -283,7 +294,7 @@ def test_nts_certificates_config(helper):
     act: process a config-changed event to set nts-certificates charm configuration.
     assert: confirm that the test certificates and keys are correctly used.
     """
-    ctx = Context(ChronyCharm)
+    ctx = _context()
     secret_id = "secret:user-provided"
     secret = Secret(
         id=secret_id,
@@ -317,7 +328,7 @@ def test_nts_certificates_config_with_nts_certificates_integration(helper):
         local_unit_data=local_unit_data,
         remote_app_data=helper.get_remote_app_data(),
     )
-    ctx = Context(ChronyCharm)
+    ctx = _context()
     integration_secret = helper.get_tls_certificates_secret()
     config_secret_id = "secret:user-provided"
     config_secret = Secret(

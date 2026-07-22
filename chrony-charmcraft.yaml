@@ -79,5 +79,29 @@ parts:
     plugin: uv
     build-snaps:
     - astral-uv
+    override-build: |
+      craftctl default
+      ln -sf chrony_charm.py "${CRAFT_PART_INSTALL}/src/charm.py"
+  files:
+    source: .
+    plugin: dump
+    stage:
+      - files
+  patches:
+    source: ./patches
+    plugin: nil
+  chrony-exporter:
+    after: [ patches ]
+    source: https://github.com/SuperQ/chrony_exporter.git
+    source-type: git
+    source-tag: v0.13.3
+    plugin: go
+    build-environment:
+      - CGO_ENABLED: "0"
+    build-snaps:
+      - go
+    override-build: |
+      git apply "$CRAFT_PROJECT_DIR/patches/exporter-reverse-lookup-timeout.patch"
+      craftctl default
 assumes:
   - juju >= 3.3

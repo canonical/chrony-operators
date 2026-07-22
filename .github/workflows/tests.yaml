@@ -5,14 +5,7 @@ on:
   pull_request:
 jobs:
   unit-tests:
-    strategy:
-      matrix:
-        charm:
-          - name: chrony
-            working-directory: ./chrony-operator
-          - name: chrony-client
-            working-directory: ./chrony-client-operator
-    name: Unit tests for ${{ matrix.charm.name }}
+    name: Unit tests
     uses: canonical/operator-workflows/.github/workflows/test.yaml@main
     permissions:
       contents: read
@@ -22,7 +15,7 @@ jobs:
       runs-on-base: ubuntu-24.04
       python-version: "3.12"
       self-hosted-runner: false
-      working-directory: ${{ matrix.charm.working-directory }}
+      working-directory: ./
       with-uv: true
   integration-test:
     uses: canonical/charm-ci/.github/workflows/integration-test.yml@v0.0.1-alpha.3
