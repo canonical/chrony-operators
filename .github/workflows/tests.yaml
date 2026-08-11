@@ -17,6 +17,7 @@ jobs:
       self-hosted-runner: false
       working-directory: ./
       with-uv: true
+      require-check-lib: false
   integration-test:
     uses: canonical/charm-ci/.github/workflows/integration-test.yml@v0.0.1-alpha.9
     with:
