@@ -16,7 +16,7 @@ import typing
 import ops
 from charms.grafana_agent.v0.cos_agent import COSAgentProvider
 
-from chrony import Chrony, TimeSource
+from chrony import Chrony, ChronyConfigBase, TimeSource
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +27,42 @@ CHRONY_CHARM_CONFIG_HEADER = textwrap.dedent(
     # Do not edit.\
     """
 )
+
+
+class ChronyConfig(ChronyConfigBase):
+    """Chrony configuration file control for the chrony-client charm."""
+
+    def render(self) -> str:
+        """Generate the chrony configuration file content.
+
+        Returns:
+            Generated chrony configuration file content.
+        """
+        sources_config = "\n".join(s.render() for s in self._sources)
+        certs_lines = []
+        for idx, _ in enumerate(self._tls_key_pairs):
+            certs_lines.append(
+                "ntsservercert " + str((self._chrony.CERTS_DIR / f"{idx:04}.crt").absolute())
+            )
+            certs_lines.append(
+                "ntsserverkey " + str((self._chrony.CERTS_DIR / f"{idx:04}.key").absolute())
+            )
+        certs = "\n".join(certs_lines)
+        static = textwrap.dedent("""\
+                sourcedir /run/chrony-dhcp
+                sourcedir /etc/chrony/sources.d
+                keyfile /etc/chrony/chrony.keys
+                driftfile /var/lib/chrony/chrony.drift
+                ntsdumpdir /var/lib/chrony
+                logdir /var/log/chrony
+                maxupdateskew 100.0
+                rtcsync
+                makestep 1 3
+                leapsectz right/UTC
+            """)
+        return "\n\n".join(
+            part for part in [self._header, sources_config, certs, static] if part
+        ).lstrip()
 
 
 class ChronyClientCharm(ops.CharmBase):
@@ -45,7 +81,7 @@ class ChronyClientCharm(ops.CharmBase):
             metrics_endpoints=[
                 {"path": "/metrics", "port": 9123},
             ],
-            dashboard_dirs=["./src/grafana_dashboards"],
+            dashboard_dirs=["./src/chrony_client_dashboards"],
         )
         self.framework.observe(self.on.install, self._do_install_and_config)
         self.framework.observe(self.on.remove, self._on_remove)
@@ -82,12 +118,9 @@ class ChronyClientCharm(ops.CharmBase):
             return
         if CHRONY_CHARM_CONFIG_HEADER not in self.chrony.read_config():
             self.chrony.backup_config()
-        new_config = self.chrony.new_config(sources=sources, header=CHRONY_CHARM_CONFIG_HEADER)
-        current_config = self.chrony.read_config()
-        if new_config != current_config:
-            logger.info("Chrony config changed, apply and restart chrony")
-            self.chrony.write_config(new_config)
-            self.chrony.restart()
+        self.chrony.apply_config(
+            ChronyConfig(chrony=self.chrony, sources=sources, header=CHRONY_CHARM_CONFIG_HEADER)
+        )
 
         self.unit.status = ops.ActiveStatus()
 

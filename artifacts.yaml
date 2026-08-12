@@ -5,13 +5,13 @@ version: 1
 rocks: []
 charms:
 - name: chrony
-  charmcraft-yaml: chrony-operator/charmcraft.yaml
+  charmcraft-yaml: chrony-charmcraft.yaml
   resources: {}
   platforms:
   - arch: amd64
   channel: latest/edge
 - name: chrony-client
-  charmcraft-yaml: chrony-client-operator/charmcraft.yaml
+  charmcraft-yaml: chrony-client-charmcraft.yaml
   resources: {}
   platforms:
   - arch: amd64
