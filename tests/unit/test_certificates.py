@@ -295,7 +295,7 @@ def test_nts_certificates_config(helper):
     assert: confirm that the test certificates and keys are correctly used.
     """
     ctx = _context()
-    secret_id = "secret:user-provided"
+    secret_id = "secret:user-provided"  # nosec B105
     secret = Secret(
         id=secret_id,
         tracked_content={"cert": "test cert", "key": "test key"},
@@ -330,7 +330,7 @@ def test_nts_certificates_config_with_nts_certificates_integration(helper):
     )
     ctx = _context()
     integration_secret = helper.get_tls_certificates_secret()
-    config_secret_id = "secret:user-provided"
+    config_secret_id = "secret:user-provided"  # nosec B105
     config_secret = Secret(
         id=config_secret_id,
         tracked_content={"cert": "test cert", "key": "test key"},
