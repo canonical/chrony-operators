@@ -1,0 +1,13 @@
+version_schema: 2
+changes:
+  - title: Pinned charm-ci v1.0.0 in CI configuration
+    author: Copilot
+    type: minor
+    description: Moved the opcli git dependency into uv sources, updated both sub-charms to charm-ci v1.0.0, and pinned the reusable charm-ci workflows to the matching release commit.
+    urls:
+      pr:
+        - https://github.com/canonical/chrony-operators/pull/25
+      related_doc:
+      related_issue:
+    visibility: internal
+    highlight: false
