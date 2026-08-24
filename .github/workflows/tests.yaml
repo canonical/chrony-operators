@@ -25,7 +25,7 @@ jobs:
       working-directory: ${{ matrix.charm.working-directory }}
       with-uv: true
   integration-test:
-    uses: canonical/charm-ci/.github/workflows/integration-test.yml@v1.0.1
+    uses: canonical/charm-ci/.github/workflows/integration-test.yml@58ae6614a3b143d4e57eff0fd1770e97d8c30fab # v1.0.1
     with:
       spread-jobs-include: "integration-test-ci:*"
     secrets: inherit
