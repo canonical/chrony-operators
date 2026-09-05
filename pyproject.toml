@@ -9,7 +9,7 @@ readme = "README.md"
 fmt = [ "ruff" ]
 lint = [
   "codespell",
-  "jubilant==1.12.0",
+  "jubilant==1.13.0",
   "mypy",
   "ops[testing]",
   "pep8-naming",
@@ -21,7 +21,7 @@ lint = [
   "types-requests",
 ]
 integration = [
-  "jubilant==1.12.0",
+  "jubilant==1.13.0",
   "pytest",
 ]
 [tool.uv]
