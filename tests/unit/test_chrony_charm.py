@@ -16,7 +16,9 @@ from chrony import TlsKeyPair
 from chrony_charm import ChronyConfig
 
 _CHARMCRAFT_META = yaml.safe_load(
-    (pathlib.Path(__file__).resolve().parents[2] / "chrony-charmcraft.yaml").read_text()
+    (
+        pathlib.Path(__file__).resolve().parents[2] / "chrony-operator" / "charmcraft.yaml"
+    ).read_text()
 )
 
 

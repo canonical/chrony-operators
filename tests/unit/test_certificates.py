@@ -18,7 +18,9 @@ from chrony_charm import ChronyCharm
 from tests.utils import get_csr_common_name
 
 _CHARMCRAFT_META = yaml.safe_load(
-    (pathlib.Path(__file__).resolve().parents[2] / "chrony-charmcraft.yaml").read_text()
+    (
+        pathlib.Path(__file__).resolve().parents[2] / "chrony-operator" / "charmcraft.yaml"
+    ).read_text()
 )
 
 

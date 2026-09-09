@@ -75,7 +75,7 @@ class ChronyCharm(ops.CharmBase):
             metrics_endpoints=[
                 {"path": "/metrics", "port": 9123},
             ],
-            dashboard_dirs=["./src/chrony_dashboards"],
+            dashboard_dirs=["./src/grafana_dashboards"],
         )
         self.framework.observe(self.on.install, self._on_install)
         self.framework.observe(self.on.upgrade_charm, self._on_upgrade_charm)
@@ -168,16 +168,17 @@ class ChronyCharm(ops.CharmBase):
         """Renew the certificate.
 
         Raises:
-            AssertionError: if there's no server name (canary exception).
+            AssertionError: if there's no server name or private key (canary exception).
         """
         old_csr = self.tls_keychain.get_csr()
         private_key = self.tls_keychain.get_private_key()
-        if not self._get_server_name():  # pragma: nocover
-            raise AssertionError("no server name")
+        server_name = self._get_server_name()
+        if not server_name or not private_key:  # pragma: nocover
+            raise AssertionError("no server name or private key")
         new_csr = tls_certificates.generate_csr(
             private_key=private_key.encode(),
-            subject=self._get_server_name(),
-            sans_dns=[self._get_server_name(), f"*.{self._get_server_name()}"],
+            subject=server_name,
+            sans_dns=[server_name, f"*.{server_name}"],
         )
         if not old_csr:
             self.certificates.request_certificate_creation(certificate_signing_request=new_csr)
@@ -186,7 +187,7 @@ class ChronyCharm(ops.CharmBase):
                 old_certificate_signing_request=old_csr.encode(),
                 new_certificate_signing_request=new_csr,
             )
-        self.tls_keychain.set_server_name(self._get_server_name())
+        self.tls_keychain.set_server_name(server_name)
         self.tls_keychain.set_csr(new_csr.decode(encoding="ascii").strip())
 
     def _revoke_certificate(self) -> None:

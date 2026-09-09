@@ -67,6 +67,7 @@ package = false
 [tool.ruff]
 target-version = "py310"
 line-length = 99
+src = [ ".", "shared", "chrony-operator/src", "chrony-client-operator/src" ]
 
 # enable ruff linters:
 #   A flake8-builtins
@@ -112,6 +113,7 @@ lint.per-file-ignores."tests/*" = [ "B011", "D100", "D101", "D102", "D103", "D10
 lint.flake8-copyright.author = "Canonical Ltd."
 lint.flake8-copyright.min-file-size = 1
 lint.flake8-copyright.notice-rgx = "Copyright\\s\\d{4}([-,]\\d{4})*\\s+"
+lint.isort.known-first-party = [ "chrony", "chrony_charm", "chrony_client_charm", "keychain" ]
 lint.mccabe.max-complexity = 10
 lint.pydocstyle.convention = "google"
 
@@ -124,6 +126,11 @@ log_cli_level = "INFO"
 
 [tool.coverage.run]
 branch = true
+source = [
+  "shared",
+  "chrony-operator/src",
+  "chrony-client-operator/src",
+]
 
 [tool.coverage.report]
 show_missing = true
@@ -133,6 +140,7 @@ check_untyped_defs = true
 disallow_untyped_defs = true
 explicit_package_bases = true
 ignore_missing_imports = true
+mypy_path = "shared"
 namespace_packages = true
 
 [[tool.mypy.overrides]]

@@ -81,7 +81,7 @@ class ChronyClientCharm(ops.CharmBase):
             metrics_endpoints=[
                 {"path": "/metrics", "port": 9123},
             ],
-            dashboard_dirs=["./src/chrony_client_dashboards"],
+            dashboard_dirs=["./src/grafana_dashboards"],
         )
         self.framework.observe(self.on.install, self._do_install_and_config)
         self.framework.observe(self.on.remove, self._on_remove)

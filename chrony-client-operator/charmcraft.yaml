@@ -57,26 +57,30 @@ platforms:
 
 parts:
   charm:
-    source: .
+    source: ..
+    source-subdir: chrony-client-operator
     plugin: uv
     build-snaps:
       - astral-uv
-    override-build: |
-      craftctl default
-      ln -sf chrony_client_charm.py "${CRAFT_PART_INSTALL}/src/charm.py"
   files:
-    source: .
+    source: ../files
     plugin: dump
-    stage:
-      - files
+    organize:
+      "*": files/
   changelog:
-    source: ./docs
+    source: ../docs
     plugin: dump
     stage:
       - changelog.md
   patches:
-    source: ./patches
-    plugin: nil
+    source: ../patches
+    plugin: dump
+    organize:
+      "*": patches/
+    stage:
+      - patches
+    prime:
+      - -patches
   chrony-exporter:
     after: [ patches ]
     source: https://github.com/SuperQ/chrony_exporter.git
@@ -88,5 +92,5 @@ parts:
     build-snaps:
       - go
     override-build: |
-      git apply "$CRAFT_PROJECT_DIR/patches/exporter-reverse-lookup-timeout.patch"
+      git apply "$CRAFT_STAGE/patches/exporter-reverse-lookup-timeout.patch"
       craftctl default

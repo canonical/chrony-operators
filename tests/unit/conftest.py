@@ -3,8 +3,10 @@
 
 """Fixtures for charm tests."""
 
+import importlib.util
 import json
 import pathlib
+import sys
 from unittest.mock import patch
 
 import cryptography.hazmat.primitives.serialization
@@ -15,6 +17,22 @@ from ops.testing import Secret
 import chrony
 import keychain
 from tests.utils import TEST_CA_CERT, sign_csr
+
+_REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+_CHARM_MODULES = {
+    "chrony_charm": _REPO_ROOT / "chrony-operator" / "src" / "charm.py",
+    "chrony_client_charm": _REPO_ROOT / "chrony-client-operator" / "src" / "charm.py",
+}
+
+for name, path in _CHARM_MODULES.items():
+    if name in sys.modules:
+        continue
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec is not None and spec.loader is not None, f"cannot load charm module: {path}"
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
 
 
 @pytest.fixture(name="patch_charm", autouse=True)

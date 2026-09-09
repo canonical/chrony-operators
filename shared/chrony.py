@@ -12,6 +12,7 @@ import logging
 import os
 import pathlib
 import shutil
+import sys
 import typing
 import urllib.parse
 
@@ -21,22 +22,41 @@ from charms.operator_libs_linux.v1 import systemd
 
 logger = logging.getLogger(__name__)
 
-_BIN_DIR = pathlib.Path(__file__).parent.parent / "bin"
-_FILES_DIR = pathlib.Path(__file__).parent.parent / "files"
 _CHRONY_EXPORTER_BIN_FILE = pathlib.Path("/usr/bin/chrony_exporter")
 _CHRONY_EXPORTER_SERVICE_FILE = pathlib.Path(
     "/usr/lib/systemd/system/prometheus-chrony-exporter.service"
 )
 _CHRONY_EXPORTER_APPARMOR_FILE = pathlib.Path("/etc/apparmor.d/usr.bin.chrony_exporter")
-_CHRONY_EXPORTER_FILES = {
-    _BIN_DIR / "chrony_exporter": _CHRONY_EXPORTER_BIN_FILE,
-    _FILES_DIR / "chrony-exporter.service": _CHRONY_EXPORTER_SERVICE_FILE,
-    _FILES_DIR / "usr.bin.chrony_exporter": _CHRONY_EXPORTER_APPARMOR_FILE,
-}
 _CHRONY_EXPORTER_SERVICE_NAME = "prometheus-chrony-exporter"
 _LEGACY_EXPORTER_PACKAGE = "prometheus-chrony-exporter"
 _APT_SOURCES_DIR = pathlib.Path("/etc/apt/sources.list.d")
 _LEGACY_EXPORTER_PPA_SOURCES_GLOB = "canonical-is-devops-ubuntu-chrony-charm-*"
+
+
+def _get_charm_dir() -> pathlib.Path:
+    """Get the directory of the charm using this module.
+
+    Returns:
+        The charm directory, which contains the `bin` and `files` directories.
+    """
+    charm_dir = os.environ.get("JUJU_CHARM_DIR")
+    if charm_dir:
+        return pathlib.Path(charm_dir)
+    return pathlib.Path(sys.argv[0]).absolute().parent.parent
+
+
+def _chrony_exporter_files() -> dict[pathlib.Path, pathlib.Path]:
+    """Map the chrony_exporter files shipped in the charm to their installed locations.
+
+    Returns:
+        A mapping from the file inside the charm to its destination on the system.
+    """
+    charm_dir = _get_charm_dir()
+    return {
+        charm_dir / "bin" / "chrony_exporter": _CHRONY_EXPORTER_BIN_FILE,
+        charm_dir / "files" / "chrony-exporter.service": _CHRONY_EXPORTER_SERVICE_FILE,
+        charm_dir / "files" / "usr.bin.chrony_exporter": _CHRONY_EXPORTER_APPARMOR_FILE,
+    }
 
 
 class _PoolOptions(pydantic.BaseModel):
@@ -249,7 +269,7 @@ class Chrony:
             return False
         if not shutil.which("chronyc"):
             return False
-        for source, target in _CHRONY_EXPORTER_FILES.items():
+        for source, target in _chrony_exporter_files().items():
             if source.read_bytes() != target.read_bytes():
                 return False
         return True
@@ -480,7 +500,7 @@ class Chrony:
 
     def _install_chrony_exporter_files(self) -> None:
         """Install chrony_exporter files."""
-        for source, dest in _CHRONY_EXPORTER_FILES.items():
+        for source, dest in _chrony_exporter_files().items():
             executable = os.access(source, os.X_OK)
             if executable:
                 dest.unlink(missing_ok=True)

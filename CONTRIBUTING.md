@@ -166,10 +166,17 @@ rockcraft pack
 skopeo --insecure-policy copy --dest-tls-verify=false oci-archive:<rock-name>.rock docker://localhost:32000/<app-name>:latest
 ```
 
-Build the charm in this git repository using:
+Build the charms in this git repository as follows.
+
+This repository is a monorepo: each charm lives in its own directory
+(`chrony-operator` and `chrony-client-operator`) and the Python code shared by both
+charms lives in `shared`. Packing therefore requires Charmcraft 4.5 or later with
+[monorepo support](https://canonical.com/juju/docs/charmcraft/latest/howto/pack-a-charm-in-a-monorepo/)
+enabled, so that Charmcraft mounts the repository root into the build environment:
 
 ```shell
-charmcraft pack
+cd chrony-operator
+CHARMCRAFT_EXPERIMENTAL_MONOREPO=1 charmcraft pack
 ```
 
 ### Deploy

@@ -12,7 +12,9 @@ passenv = [ "PYTHONPATH", "CHARM_BUILD_DIR", "MODEL_SETTINGS" ]
 runner = "uv-venv-lock-runner"
 
 [env_run_base.setenv]
-PYTHONPATH = "{toxinidir}:{toxinidir}/lib:{[vars]src_path}"
+# The charm libraries are duplicated per charm; the chrony-operator copy is a superset
+# of the chrony-client-operator one, so it is the copy made importable for the tests.
+PYTHONPATH = "{toxinidir}:{toxinidir}/shared:{toxinidir}/chrony-operator/lib"
 PYTHONBREAKPOINT = "ipdb.set_trace"
 PY_COLORS = "1"
 
@@ -68,10 +70,16 @@ commands = [
   ],
   [
     "mypy",
-    { replace = "ref", of = [
-      "vars",
-      "all_path",
-    ], extend = true },
+    "{toxinidir}/shared/",
+    "{toxinidir}/tests/",
+  ],
+  [
+    "mypy",
+    "{toxinidir}/chrony-operator/src/",
+  ],
+  [
+    "mypy",
+    "{toxinidir}/chrony-client-operator/src/",
   ],
 ]
 dependency_groups = [ "lint" ]
@@ -82,7 +90,6 @@ commands = [
   [
     "coverage",
     "run",
-    "--source={[vars]src_path}",
     "-m",
     "pytest",
     "--ignore={[vars]tst_path}integration",
@@ -106,7 +113,18 @@ dependency_groups = [ "coverage-report" ]
 
 [env.static]
 description = "Run static analysis tests"
-commands = [ [ "bandit", "-c", "{toxinidir}/pyproject.toml", "-r", "{[vars]src_path}", "{[vars]tst_path}" ] ]
+commands = [
+  [
+    "bandit",
+    "-c",
+    "{toxinidir}/pyproject.toml",
+    "-r",
+    { replace = "ref", of = [
+      "vars",
+      "all_path",
+    ], extend = true },
+  ],
+]
 dependency_groups = [ "static" ]
 
 [env.integration]
@@ -142,6 +160,10 @@ commands = [
 dependency_groups = [ "lint" ]
 
 [vars]
-src_path = "{toxinidir}/src/"
 tst_path = "{toxinidir}/tests/"
-all_path = [ "{toxinidir}/src/", "{toxinidir}/tests/" ]
+all_path = [
+  "{toxinidir}/shared/",
+  "{toxinidir}/chrony-operator/src/",
+  "{toxinidir}/chrony-client-operator/src/",
+  "{toxinidir}/tests/",
+]

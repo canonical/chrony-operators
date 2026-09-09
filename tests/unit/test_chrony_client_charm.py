@@ -14,11 +14,12 @@ import pytest
 import yaml
 from ops import testing
 
-import chrony
 import chrony_client_charm as charm
 
 _CHARMCRAFT_META = yaml.safe_load(
-    (pathlib.Path(__file__).resolve().parents[2] / "chrony-client-charmcraft.yaml").read_text()
+    (
+        pathlib.Path(__file__).resolve().parents[2] / "chrony-client-operator" / "charmcraft.yaml"
+    ).read_text()
 )
 
 
@@ -118,7 +119,7 @@ def _context() -> testing.Context:
         ),
     ],
 )
-def test_chrony_config(sources: str, valid: bool, source_config: str, mock_chrony: chrony.Chrony):
+def test_chrony_config(sources: str, valid: bool, source_config: str, mock_chrony):
     """
     arrange: none.
     act: trigger the 'config-changed' event with different sources charm configuration.
@@ -167,7 +168,7 @@ def test_chrony_config(sources: str, valid: bool, source_config: str, mock_chron
     mock_chrony.restart.assert_called_once()
 
 
-def test_chrony_uninstall(mock_chrony: chrony.Chrony):
+def test_chrony_uninstall(mock_chrony):
     """
     arrange: run the `config-changed` event
     act: trigger the 'remove' event.
