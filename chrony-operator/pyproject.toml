@@ -15,4 +15,4 @@ dependencies = [
 package = false
 
 [tool.uv.sources]
-chrony-shared = { path = "../shared" }
+chrony-shared = { workspace = true }

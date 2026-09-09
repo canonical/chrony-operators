@@ -8,6 +8,14 @@ resolution-markers = [
     "python_full_version < '3.11'",
 ]
 
+[manifest]
+members = [
+    "chrony-client-operator",
+    "chrony-operator",
+    "chrony-operators",
+    "chrony-shared",
+]
+
 [[package]]
 name = "annotated-types"
 version = "0.7.0"
@@ -304,16 +312,41 @@ wheels = [
 ]
 
 [[package]]
+name = "chrony-client-operator"
+version = "0.0.0"
+source = { virtual = "chrony-client-operator" }
+dependencies = [
+    { name = "chrony-shared" },
+    { name = "ops" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "chrony-shared", editable = "shared" },
+    { name = "ops", specifier = "==3.8.2" },
+]
+
+[[package]]
+name = "chrony-operator"
+version = "0.0.0"
+source = { virtual = "chrony-operator" }
+dependencies = [
+    { name = "chrony-shared" },
+    { name = "ops" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "chrony-shared", editable = "shared" },
+    { name = "ops", specifier = "==3.8.2" },
+]
+
+[[package]]
 name = "chrony-operators"
 version = "0.0.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "cosl" },
-    { name = "cryptography" },
-    { name = "jsonschema" },
-    { name = "opentelemetry-api" },
-    { name = "ops" },
-    { name = "pydantic" },
+    { name = "chrony-shared" },
 ]
 
 [package.dev-dependencies]
@@ -353,14 +386,7 @@ unit = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "cosl", specifier = "==1.10.3" },
-    { name = "cryptography", specifier = "==50.0.1" },
-    { name = "jsonschema", specifier = "==4.26.0" },
-    { name = "opentelemetry-api", specifier = "==1.44.0" },
-    { name = "ops", specifier = "==3.8.2" },
-    { name = "pydantic", specifier = "==2.13.5" },
-]
+requires-dist = [{ name = "chrony-shared", editable = "shared" }]
 
 [package.metadata.requires-dev]
 coverage-report = [
@@ -393,6 +419,29 @@ unit = [
     { name = "coverage", extras = ["toml"], specifier = "==7.16.0" },
     { name = "ops", extras = ["testing"], specifier = "==3.8.2" },
     { name = "pytest", specifier = "==9.1.1" },
+]
+
+[[package]]
+name = "chrony-shared"
+version = "0.0.0"
+source = { editable = "shared" }
+dependencies = [
+    { name = "cosl" },
+    { name = "cryptography" },
+    { name = "jsonschema" },
+    { name = "opentelemetry-api" },
+    { name = "ops" },
+    { name = "pydantic" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "cosl", specifier = "==1.10.3" },
+    { name = "cryptography", specifier = "==50.0.1" },
+    { name = "jsonschema", specifier = "==4.26.0" },
+    { name = "opentelemetry-api", specifier = "==1.44.0" },
+    { name = "ops", specifier = "==3.8.2" },
+    { name = "pydantic", specifier = "==2.13.5" },
 ]
 
 [[package]]

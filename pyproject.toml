@@ -16,12 +16,7 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "cosl==1.10.3",
-  "cryptography==50.0.1",
-  "jsonschema==4.26.0",
-  "opentelemetry-api==1.44.0",
-  "ops==3.8.2",
-  "pydantic==2.13.5",
+  "chrony-shared",
 ]
 
 [dependency-groups]
@@ -63,6 +58,12 @@ integration = [
 
 [tool.uv]
 package = false
+
+[tool.uv.workspace]
+members = [ "shared", "chrony-operator", "chrony-client-operator" ]
+
+[tool.uv.sources]
+chrony-shared = { workspace = true }
 
 [tool.ruff]
 target-version = "py310"
