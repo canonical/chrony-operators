@@ -18,12 +18,12 @@ jobs:
       working-directory: ./
       with-uv: true
   integration-test:
-    # TODO: switch back to a released charm-ci tag once the branch that allows
-    # passing CHARMCRAFT_EXPERIMENTAL_MONOREPO to charmcraft pack is released.
     uses: canonical/charm-ci/.github/workflows/integration-test.yml@environments
     with:
       spread-jobs-include: "integration-test-ci:*"
       charmcraft-channel: latest/edge
+      charmcraft-environments: |
+        CHARMCRAFT_EXPERIMENTAL_MONOREPO=1
     secrets: inherit
     permissions:
       contents: read
