@@ -18,7 +18,7 @@ jobs:
       working-directory: ./
       with-uv: true
   integration-test:
-    uses: canonical/charm-ci/.github/workflows/integration-test.yml@environments
+    uses: canonical/charm-ci/.github/workflows/integration-test.yml@main
     with:
       spread-jobs-include: "integration-test-ci:*"
       charmcraft-channel: latest/edge
