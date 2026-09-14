@@ -29,7 +29,7 @@ fmt = [
 ]
 lint = [
   "codespell",
-  "coverage[toml]==7.16.0",
+  "coverage[toml]==7.16.1",
   "jubilant==1.13.0",
   "mypy",
   "ops[testing]==3.8.2",
@@ -43,7 +43,7 @@ lint = [
   "types-requests",
 ]
 unit = [
-  "coverage[toml]==7.16.0",
+  "coverage[toml]==7.16.1",
   "ops[testing]==3.8.2",
   "pytest==9.1.1",
 ]
