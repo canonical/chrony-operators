@@ -19,8 +19,9 @@ def test_time_sources(juju, chrony_client_app, chrony_app):
     sources = f"ntp://{server_ip}?iburst=true"
     juju.config(chrony_client_app.name, {"sources": sources})
     juju.wait(
-        lambda *args, **kwargs: jubilant.all_active(*args, **kwargs)
-        and jubilant.all_agents_idle(*args, **kwargs)
+        lambda *args, **kwargs: (
+            jubilant.all_active(*args, **kwargs) and jubilant.all_agents_idle(*args, **kwargs)
+        )
     )
 
     assert server_ip in chrony_client_app.ssh("chronyc -N -n -c sources")

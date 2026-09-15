@@ -19,7 +19,7 @@
 - **`chrony_sources_reachability_success`**: Chrony sources last poll reachability success
 - **`chrony_sources_state_info`**: Chrony sources state info
 - **`chrony_sources_stratum`**: Chrony sources stratum numbers
-- **`chrony_tracking_frequency_ppms`**: Rate by which the system's clock would be wrong if chronyd was not correcting it, in PPMs
+- **`chrony_tracking_frequency_ppms`**: Rate by which the system's clock would be wrong if `chronyd` was not correcting it, in PPMs
 - **`chrony_tracking_info`**: Chrony tracking info
 - **`chrony_tracking_last_offset_seconds`**: Chrony tracking last offset in seconds
 - **`chrony_tracking_reference_timestamp_seconds`**: Chrony tracking Reference timestamp
