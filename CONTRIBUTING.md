@@ -171,7 +171,7 @@ Build the charms in this git repository as follows.
 This repository is a monorepo: each charm lives in its own directory
 (`chrony-operator` and `chrony-client-operator`) and the Python code shared by both
 charms lives in `shared`. The three directories are members of a
-[uv workspace](https://docs.astral.sh/uv/concepts/projects/workspaces/) rooted at the
+[`uv` workspace](https://docs.astral.sh/uv/concepts/projects/workspaces/) rooted at the
 repository root, so all of them share the single `uv.lock` file there; run `uv lock`
 from the repository root after changing any of their dependencies. Packing requires
 Charmcraft 4.5 or later with
