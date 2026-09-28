@@ -8,16 +8,53 @@
 """Chrony charm."""
 
 import logging
+import textwrap
 import typing
 
 import ops
 from charms.grafana_agent.v0.cos_agent import COSAgentProvider
 from charms.tls_certificates_interface.v3 import tls_certificates
 
-from chrony import Chrony, TimeSource, TlsKeyPair
+from chrony import Chrony, ChronyConfigBase, TimeSource, TlsKeyPair
 from keychain import TlsKeychain
 
 logger = logging.getLogger(__name__)
+
+
+class ChronyConfig(ChronyConfigBase):
+    """Chrony configuration file control for the chrony (NTS server) charm."""
+
+    def render(self) -> str:
+        """Generate the chrony configuration file content.
+
+        Returns:
+            Generated chrony configuration file content.
+        """
+        sources = "\n".join(s.render() for s in self._sources)
+        certs_lines = []
+        for idx, _ in enumerate(self._tls_key_pairs):
+            certs_lines.append(
+                "ntsservercert " + str((self._chrony.CERTS_DIR / f"{idx:04}.crt").absolute())
+            )
+            certs_lines.append(
+                "ntsserverkey " + str((self._chrony.CERTS_DIR / f"{idx:04}.key").absolute())
+            )
+        certs = "\n".join(certs_lines)
+        static = textwrap.dedent(
+            """\
+                bindcmdaddress 127.0.0.1
+                driftfile /var/lib/chrony/chrony.drift
+                ntsdumpdir /var/lib/chrony
+                logdir /var/log/chrony
+                maxupdateskew 100.0
+                rtcsync
+                makestep 1 3
+                leapsectz right/UTC
+                allow 0.0.0.0/0
+                allow ::/0
+                """
+        )
+        return "\n\n".join(part for part in [sources, certs, static] if part)
 
 
 class ChronyCharm(ops.CharmBase):
@@ -131,16 +168,17 @@ class ChronyCharm(ops.CharmBase):
         """Renew the certificate.
 
         Raises:
-            AssertionError: if there's no server name (canary exception).
+            AssertionError: if there's no server name or private key (canary exception).
         """
         old_csr = self.tls_keychain.get_csr()
         private_key = self.tls_keychain.get_private_key()
-        if not self._get_server_name():  # pragma: nocover
-            raise AssertionError("no server name")
+        server_name = self._get_server_name()
+        if not server_name or not private_key:  # pragma: nocover
+            raise AssertionError("no server name or private key")
         new_csr = tls_certificates.generate_csr(
             private_key=private_key.encode(),
-            subject=self._get_server_name(),
-            sans_dns=[self._get_server_name(), f"*.{self._get_server_name()}"],
+            subject=server_name,
+            sans_dns=[server_name, f"*.{server_name}"],
         )
         if not old_csr:
             self.certificates.request_certificate_creation(certificate_signing_request=new_csr)
@@ -149,7 +187,7 @@ class ChronyCharm(ops.CharmBase):
                 old_certificate_signing_request=old_csr.encode(),
                 new_certificate_signing_request=new_csr,
             )
-        self.tls_keychain.set_server_name(self._get_server_name())
+        self.tls_keychain.set_server_name(server_name)
         self.tls_keychain.set_csr(new_csr.decode(encoding="ascii").strip())
 
     def _revoke_certificate(self) -> None:
@@ -170,6 +208,7 @@ class ChronyCharm(ops.CharmBase):
     def _do_install(self) -> None:
         """Install required packages and open NTP port."""
         self.unit.status = ops.MaintenanceStatus("installing chrony")
+        self.chrony.remove_legacy_ppa_exporter()
         self.chrony.install()
         self.unit.open_port("udp", 123)
         if not self.tls_keychain.get_private_key():
@@ -212,7 +251,13 @@ class ChronyCharm(ops.CharmBase):
             self.unit.open_port("tcp", 4460)
         else:
             self.unit.close_port("tcp", 4460)
-        self.chrony.new_config(sources=sources, tls_key_pairs=self._get_nts_certificates()).apply()
+        self.chrony.apply_config(
+            ChronyConfig(
+                chrony=self.chrony,
+                sources=sources,
+                tls_key_pairs=self._get_nts_certificates(),
+            )
+        )
 
     def _get_server_name(self) -> str | None:
         """Get server name from charm configuration.

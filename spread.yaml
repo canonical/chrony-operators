@@ -19,19 +19,12 @@ exclude:
 - .venv
 - .*_cache
 integration-suites:
-  chrony-operator/tests/integration/:
-    summary: chrony charm integration tests
-    working-dir: chrony-operator/
+  tests/integration/:
+    summary: chrony charms integration tests
+    working-dir: ./
     backends:
     - integration-test
     systems: [ubuntu-24.04]
-    pytest-arguments-template: &default-pytest-args |
+    pytest-arguments-template: |
       --model testing
       --keep-models
-  chrony-client-operator/tests/integration/:
-    summary: chrony-client charm integration tests
-    working-dir: chrony-client-operator/
-    backends:
-    - integration-test
-    systems: [ubuntu-24.04]
-    pytest-arguments-template: *default-pytest-args

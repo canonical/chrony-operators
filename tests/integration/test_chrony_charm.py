@@ -4,16 +4,58 @@
 """Integration tests."""
 
 import logging
-import socket
 import ssl
 from collections.abc import Callable
 
 import jubilant
 import pytest
+from opcli.pytest_plugin import CharmPathList
 
-from tests.integration.utils import gen_tls_certificate, get_sans, get_tls_certificates
+from tests.integration.utils import (
+    gen_tls_certificate,
+    get_sans,
+    get_tls_certificates,
+    ntp_request,
+)
 
+JUJU_WAIT_TIMEOUT = 20 * 60  # 20 minutes
+CHRONY_APP = "chrony"
+SELF_SIGNED_CERTIFICATES_APP = "self-signed-certificates"
 logger = logging.getLogger(__name__)
+
+
+@pytest.fixture(scope="module", name="chrony_app")
+def chrony_app_fixture(juju: jubilant.Juju, charm_paths: dict[str, CharmPathList]) -> str:
+    """Deploy the chrony charm and return its application name."""
+    juju.wait_timeout = JUJU_WAIT_TIMEOUT
+    juju.deploy(
+        charm_paths[CHRONY_APP].path,
+        app=CHRONY_APP,
+        constraints={"virt-type": "virtual-machine"},
+    )
+    juju.wait(jubilant.all_agents_idle, timeout=JUJU_WAIT_TIMEOUT)
+    return CHRONY_APP
+
+
+@pytest.fixture(scope="module", name="self_signed_certificates_app")
+def self_signed_certificates_app_fixture(juju: jubilant.Juju) -> str:
+    """Deploy the self-signed-certificates charm and return its application name."""
+    juju.deploy("self-signed-certificates", app=SELF_SIGNED_CERTIFICATES_APP)
+    juju.wait(jubilant.all_agents_idle, timeout=JUJU_WAIT_TIMEOUT)
+    return SELF_SIGNED_CERTIFICATES_APP
+
+
+@pytest.fixture(name="get_unit_ips")
+def get_unit_ips_fixture(juju: jubilant.Juju) -> Callable[..., list[str]]:
+    """A function to get unit ips of a charm application."""
+
+    def _get_unit_ips(name: str = CHRONY_APP) -> list[str]:
+        units = juju.status().get_units(name)
+        return [
+            units[key].public_address for key in sorted(units, key=lambda n: int(n.split("/")[-1]))
+        ]
+
+    return _get_unit_ips
 
 
 def _active_and_idle(status: jubilant.Status) -> bool:
@@ -40,10 +82,7 @@ def test_ntp_server(get_unit_ips: Callable[..., list[str]]):
     """
     unit_ips = get_unit_ips()
     for unit_ip in unit_ips:
-        ntp_request = b"\x23" + b"\x00" * 47  # construct a simple NTPv4 request
-        ntp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        ntp_sock.sendto(ntp_request, (unit_ip, 123))
-        assert ntp_sock.recvfrom(65535)[0]
+        assert ntp_request(unit_ip)
 
 
 def test_nts_certificates_integration(

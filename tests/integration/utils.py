@@ -117,3 +117,12 @@ def get_common_name(certificate: cryptography.x509.Certificate) -> str:
     subject = certificate.subject
     common_name_oid = cryptography.x509.oid.NameOID.COMMON_NAME
     return subject.get_attributes_for_oid(common_name_oid)[0].value  # type: ignore
+
+
+def ntp_request(host: str, port: int = 123, timeout: float = 10.0) -> bytes:
+    """Send a simple NTPv4 request to a host and return the raw response."""
+    request = b"\x23" + b"\x00" * 47  # construct a simple NTPv4 request
+    ntp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    ntp_sock.settimeout(timeout)
+    ntp_sock.sendto(request, (host, port))
+    return ntp_sock.recvfrom(65535)[0]
