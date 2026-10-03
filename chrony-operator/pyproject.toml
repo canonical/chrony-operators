@@ -14,11 +14,11 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "cosl==1.10.3",
-  "cryptography==50.0.1",
+  "cosl==1.11.2",
+  "cryptography==50.0.2",
   "jsonschema==4.26.0",
   "opentelemetry-api==1.45.0",
-  "ops==3.8.2",
+  "ops==3.8.3",
   "pydantic==2.13.5",
 ]
 
@@ -52,7 +52,7 @@ static = [
 ]
 integration = [
   "cryptography",
-  "jubilant==1.13.0",
+  "jubilant==1.14.0",
   "opcli @ git+https://github.com/canonical/charm-ci.git@v0.0.1-alpha.10",
   "pytest",
   "requests",
