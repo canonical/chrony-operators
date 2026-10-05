@@ -9,13 +9,13 @@ backends:
     type: integration-test
     systems:
     - ubuntu-26.04:
-        runner: [self-hosted-linux-amd64-resolute-large]
+        runner: [ubuntu-26.04]
         arch: amd64
     - ubuntu-26.04-arm64:
-        runner: [self-hosted-linux-arm64-resolute-large]
+        runner: [ubuntu-26.04-arm]
         arch: arm64
     - ubuntu-26.04-s390x:
-        runner: [self-hosted-linux-ppc64el-resolute-medium]
+        runner: [self-hosted-linux-s390x-resolute-medium]
         arch: s390x
     - ubuntu-26.04-ppc64el:
         runner: [self-hosted-linux-ppc64el-resolute-medium]

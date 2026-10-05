@@ -2,8 +2,8 @@
 
 ## 2026-10-05
 
-* Added support for the Ubuntu 26.04 base and the arm64, s390x and ppc64el
-  architectures.
+* Added support for the Ubuntu 26.04 LTS base and the arm64, s390x and
+  ppc64el architectures.
 * Allowed the chrony_exporter AppArmor profile to memory-map its own
   binary, fixing the exporter crashing inside LXD containers.
 
