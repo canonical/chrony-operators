@@ -3,6 +3,7 @@
 
 """Fixtures for charm integration tests."""
 
+import platform
 import typing
 
 import jubilant
@@ -52,6 +53,20 @@ def juju_fixture(request: pytest.FixtureRequest) -> typing.Generator[jubilant.Ju
         return
 
 
+def _current_arch() -> str:
+    """Get the Debian architecture name of the current machine.
+
+    Returns:
+        The architecture name, e.g. amd64, arm64, s390x or ppc64el.
+    """
+    machine = platform.machine().lower()
+    return {
+        "x86_64": "amd64",
+        "aarch64": "arm64",
+        "ppc64le": "ppc64el",
+    }.get(machine, machine)
+
+
 @pytest.fixture(name="deploy_charms", scope="module")
 def deploy_charms_fixture(juju: jubilant.Juju, chrony_client_charm_file: str):
     """Deploy charms fixture deploy all charms necessary for the integration test."""
@@ -61,14 +76,32 @@ def deploy_charms_fixture(juju: jubilant.Juju, chrony_client_charm_file: str):
         constraints={"virt-type": "virtual-machine"},
     )
     juju.deploy(charm=chrony_client_charm_file)
-    juju.deploy(
-        charm="chrony",
-        config={"sources": "ntp://ntp.ubuntu.com?iburst=true&maxsources=4"},
-        channel="latest/edge",
-        constraints={"virt-type": "virtual-machine"},
-    )
+    if _current_arch() == "amd64":
+        juju.deploy(
+            charm="chrony",
+            config={"sources": "ntp://ntp.ubuntu.com?iburst=true&maxsources=4"},
+            channel="latest/edge",
+            constraints={"virt-type": "virtual-machine"},
+        )
+    else:
+        juju.deploy(
+            charm="ubuntu",
+            app="chrony",
+            base="ubuntu@24.04",
+            constraints={"virt-type": "virtual-machine"},
+        )
     juju.integrate("ubuntu", "chrony-client")
     juju.wait(jubilant.all_active, timeout=20 * 60)
+    if _current_arch() != "amd64":
+        juju.exec(
+            "set -e; "
+            "apt-get update; "
+            "DEBIAN_FRONTEND=noninteractive apt-get install -y chrony; "
+            "printf 'allow all\\nlocal stratum 10\\n' > /etc/chrony/conf.d/server.conf; "
+            "systemctl restart chrony",
+            unit="chrony/leader",
+            wait=10 * 60,
+        )
 
 
 class App:
