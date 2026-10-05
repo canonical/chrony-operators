@@ -15,5 +15,11 @@ charms:
   resources: {}
   platforms:
   - arch: amd64
+  - arch: arm64
+    runner: [ubuntu-26.04-arm]
+  - arch: s390x
+    runner: [self-hosted-linux-s390x-resolute-medium]
+  - arch: ppc64el
+    runner: [self-hosted-linux-ppc64el-resolute-medium]
   channel: latest/edge
 snaps: []

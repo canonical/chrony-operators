@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-05
+
+* Added support for the Ubuntu 26.04 base and the arm64, s390x and ppc64el
+  architectures.
+
 ## 2026-05-19
 
 * Increased the `ChronyTrackingStaleMeasurement` alert threshold from
