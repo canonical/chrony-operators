@@ -77,7 +77,7 @@ parts:
     stage:
       - files
   changelog:
-    source: ./docs
+    source: ./
     plugin: dump
     stage:
       - changelog.md
