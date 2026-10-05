@@ -101,7 +101,7 @@ def deploy_charms_fixture(juju: jubilant.Juju, chrony_client_charm_files: dict[s
     """Deploy a principle and a chrony-client charm for every available base."""
     for base, charm_file in chrony_client_charm_files.items():
         suffix = _app_suffix(base)
-        juju.deploy(charm="ubuntu", app=f"ubuntu-{suffix}", base=base)
+        juju.deploy(charm="ubuntu", app=f"ubuntu-{suffix}", base=base, channel="latest/edge")
         juju.deploy(charm=charm_file, app=f"chrony-client-{suffix}")
         juju.integrate(f"ubuntu-{suffix}", f"chrony-client-{suffix}")
     if _current_arch() == "amd64":
@@ -111,7 +111,7 @@ def deploy_charms_fixture(juju: jubilant.Juju, chrony_client_charm_files: dict[s
             channel="latest/edge",
         )
     else:
-        juju.deploy(charm="ubuntu", app="chrony", base="ubuntu@24.04")
+        juju.deploy(charm="ubuntu", app="chrony", base="ubuntu@24.04", channel="latest/edge")
     juju.wait(jubilant.all_active, timeout=20 * 60)
     if _current_arch() != "amd64":
         juju.exec(
