@@ -34,6 +34,12 @@ _CHRONY_EXPORTER_FILES = {
     _FILES_DIR / "usr.bin.chrony_exporter": _CHRONY_EXPORTER_APPARMOR_FILE,
 }
 _CHRONY_EXPORTER_SERVICE_NAME = "prometheus-chrony-exporter"
+_CHRONY_CONTAINER_DROPIN_FILE = pathlib.Path(
+    "/etc/systemd/system/chrony.service.d/chrony-container.conf"
+)
+_CHRONY_FILES = {
+    _FILES_DIR / "chrony-container.conf": _CHRONY_CONTAINER_DROPIN_FILE,
+}
 
 
 class _PoolOptions(pydantic.BaseModel):
@@ -200,8 +206,8 @@ class Chrony:
             return False
         if not shutil.which("chronyc"):
             return False
-        for source, target in _CHRONY_EXPORTER_FILES.items():
-            if source.read_bytes() != target.read_bytes():
+        for source, target in (_CHRONY_EXPORTER_FILES | _CHRONY_FILES).items():
+            if not target.exists() or source.read_bytes() != target.read_bytes():
                 return False
         return True
 
@@ -211,6 +217,7 @@ class Chrony:
             ["chrony", "ca-certificates"],
             update_cache=True,
         )
+        self._install_chrony_container_dropin()
         if not shutil.which("chrony_exporter"):
             self._install_chrony_exporter()
         else:
@@ -223,6 +230,24 @@ class Chrony:
         For example, ca-certificates and chrony (as in Ubuntu 26.04).
         """
         self._uninstall_chrony_exporter()
+        self._uninstall_chrony_container_dropin()
+
+    @staticmethod
+    def _install_chrony_container_dropin() -> None:  # pragma: nocover
+        """Install the systemd drop-in that allows chrony to run inside containers."""
+        for source, dest in _CHRONY_FILES.items():
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(source, dest)
+            os.chmod(dest, 0o644)
+        systemd.daemon_reload()
+        systemd.service_restart("chrony")
+
+    @staticmethod
+    def _uninstall_chrony_container_dropin() -> None:  # pragma: nocover
+        """Remove the systemd drop-in that allows chrony to run inside containers."""
+        for dest in _CHRONY_FILES.values():
+            dest.unlink(missing_ok=True)
+        systemd.daemon_reload()
 
     def read_config(self) -> str:
         """Read the current chrony configuration file.
