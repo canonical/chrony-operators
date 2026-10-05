@@ -73,7 +73,6 @@ def deploy_charms_fixture(juju: jubilant.Juju, chrony_client_charm_file: str):
     juju.deploy(
         charm="ubuntu",
         base="ubuntu@24.04",
-        constraints={"virt-type": "virtual-machine"},
     )
     juju.deploy(charm=chrony_client_charm_file)
     if _current_arch() == "amd64":
@@ -81,14 +80,12 @@ def deploy_charms_fixture(juju: jubilant.Juju, chrony_client_charm_file: str):
             charm="chrony",
             config={"sources": "ntp://ntp.ubuntu.com?iburst=true&maxsources=4"},
             channel="latest/edge",
-            constraints={"virt-type": "virtual-machine"},
         )
     else:
         juju.deploy(
             charm="ubuntu",
             app="chrony",
             base="ubuntu@24.04",
-            constraints={"virt-type": "virtual-machine"},
         )
     juju.integrate("ubuntu", "chrony-client")
     juju.wait(jubilant.all_active, timeout=20 * 60)
