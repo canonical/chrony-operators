@@ -93,7 +93,7 @@ def juju_fixture(request: pytest.FixtureRequest) -> typing.Generator[jubilant.Ju
 def chrony_client_charm_files_fixture(charm_paths: dict[str, CharmPathList]) -> dict[str, str]:
     """Get the chrony-client charm files for the current architecture, keyed by base."""
     paths = charm_paths["chrony-client"]
-    return {base: path for base, path in zip(paths.bases, paths) if base is not None}
+    return {base: path for base, path in zip(paths.bases, paths, strict=True) if base is not None}
 
 
 @pytest.fixture(name="deploy_charms", scope="module")
@@ -131,6 +131,7 @@ def base_fixture(request: pytest.FixtureRequest, chrony_client_charm_files: dict
     if request.param not in chrony_client_charm_files:
         pytest.skip(f"no chrony-client charm built for {request.param} on {_current_arch()}")
     return request.param
+
 
 class App:
     """A helper class for charm applications."""
