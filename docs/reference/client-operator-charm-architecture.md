@@ -1,4 +1,4 @@
-# Charm architecture
+# Chrony client charm architecture
 
 At its core, the Chrony client charm installs and configures the 
 `chrony` and `chrony_exporter` services.
@@ -40,7 +40,7 @@ C4Context
 
 ## Metrics
 
-See [metrics](../reference/metrics.md) for more information.
+See [metrics](metrics.md) for more information.
 
 ## Juju events
 
