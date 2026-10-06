@@ -28,6 +28,7 @@ jobs:
     uses: canonical/charm-ci/.github/workflows/integration-test.yml@v1.0.1
     with:
       spread-jobs-include: "integration-test-ci:*"
+      build-timeout-minutes: 120
     secrets: inherit
     permissions:
       contents: read
