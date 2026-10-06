@@ -2,7 +2,7 @@
 # See LICENSE file for licensing details.
 project: chrony-operators
 path: /home/ubuntu/proj
-kill-timeout: 60m
+kill-timeout: 180m
 warn-timeout: 1m
 backends:
   integration-test:

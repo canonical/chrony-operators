@@ -29,6 +29,7 @@ jobs:
     with:
       spread-jobs-include: "integration-test-ci:*"
       build-timeout-minutes: 120
+      test-timeout-minutes: 240
     secrets: inherit
     permissions:
       contents: read
