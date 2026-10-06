@@ -61,3 +61,4 @@ def test_charm_uninstall_cleanup(juju, chrony_client_app, principle_app):
         principle_app.ssh("which chrony_exporter")
 
     assert "charm" not in principle_app.ssh("cat /etc/chrony/chrony.conf")
+    principle_app.ssh("test ! -e /etc/systemd/system/chrony.service.d/chrony-container.conf")

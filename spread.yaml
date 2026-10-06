@@ -2,14 +2,24 @@
 # See LICENSE file for licensing details.
 project: chrony-operators
 path: /home/ubuntu/proj
-kill-timeout: 60m
+kill-timeout: 180m
 warn-timeout: 1m
 backends:
   integration-test:
     type: integration-test
     systems:
-    - ubuntu-24.04:
-        runner: [self-hosted, linux, X64, noble, large]
+    - ubuntu-26.04:
+        runner: [ubuntu-26.04]
+        arch: amd64
+    - ubuntu-26.04-arm64:
+        runner: [ubuntu-26.04-arm]
+        arch: arm64
+    - ubuntu-26.04-s390x:
+        runner: [self-hosted-linux-s390x-resolute-medium]
+        arch: s390x
+    - ubuntu-26.04-ppc64el:
+        runner: [self-hosted-linux-ppc64el-resolute-medium]
+        arch: ppc64el
 environment:
   OPCLI_GIT_REF: '$(HOST: echo "${OPCLI_GIT_REF:-main}")'
   CONCIERGE: concierge.yaml
@@ -24,7 +34,7 @@ integration-suites:
     working-dir: chrony-operator/
     backends:
     - integration-test
-    systems: [ubuntu-24.04]
+    systems: [ubuntu-26.04]
     pytest-arguments-template: &default-pytest-args |
       --model testing
       --keep-models
@@ -33,5 +43,5 @@ integration-suites:
     working-dir: chrony-client-operator/
     backends:
     - integration-test
-    systems: [ubuntu-24.04]
+    systems: [ubuntu-26.04, ubuntu-26.04-arm64, ubuntu-26.04-s390x, ubuntu-26.04-ppc64el]
     pytest-arguments-template: *default-pytest-args
