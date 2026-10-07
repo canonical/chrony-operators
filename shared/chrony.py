@@ -28,6 +28,9 @@ _CHRONY_EXPORTER_SERVICE_FILE = pathlib.Path(
 )
 _CHRONY_EXPORTER_APPARMOR_FILE = pathlib.Path("/etc/apparmor.d/usr.bin.chrony_exporter")
 _CHRONY_EXPORTER_SERVICE_NAME = "prometheus-chrony-exporter"
+_CHRONY_CONTAINER_DROPIN_FILE = pathlib.Path(
+    "/etc/systemd/system/chrony.service.d/chrony-container.conf"
+)
 _LEGACY_EXPORTER_PACKAGE = "prometheus-chrony-exporter"
 _APT_SOURCES_DIR = pathlib.Path("/etc/apt/sources.list.d")
 _LEGACY_EXPORTER_PPA_SOURCES_GLOB = "canonical-is-devops-ubuntu-chrony-charm-*"
@@ -56,6 +59,17 @@ def _chrony_exporter_files() -> dict[pathlib.Path, pathlib.Path]:
         charm_dir / "bin" / "chrony_exporter": _CHRONY_EXPORTER_BIN_FILE,
         charm_dir / "files" / "chrony-exporter.service": _CHRONY_EXPORTER_SERVICE_FILE,
         charm_dir / "files" / "usr.bin.chrony_exporter": _CHRONY_EXPORTER_APPARMOR_FILE,
+    }
+
+
+def _chrony_files() -> dict[pathlib.Path, pathlib.Path]:
+    """Map the chrony files shipped in the charm to their installed locations.
+
+    Returns:
+        A mapping from the file inside the charm to its destination on the system.
+    """
+    return {
+        _get_charm_dir() / "files" / "chrony-container.conf": _CHRONY_CONTAINER_DROPIN_FILE,
     }
 
 
@@ -269,8 +283,8 @@ class Chrony:
             return False
         if not shutil.which("chronyc"):
             return False
-        for source, target in _chrony_exporter_files().items():
-            if source.read_bytes() != target.read_bytes():
+        for source, target in (_chrony_exporter_files() | _chrony_files()).items():
+            if not target.exists() or source.read_bytes() != target.read_bytes():
                 return False
         return True
 
@@ -280,6 +294,7 @@ class Chrony:
             ["chrony", "ca-certificates"],
             update_cache=True,
         )
+        self._install_chrony_container_dropin()
         if not shutil.which("chrony_exporter"):
             self._install_chrony_exporter()
         else:
@@ -307,6 +322,24 @@ class Chrony:
         For example, ca-certificates and chrony (as in Ubuntu 26.04).
         """
         self._uninstall_chrony_exporter()
+        self._uninstall_chrony_container_dropin()
+
+    @staticmethod
+    def _install_chrony_container_dropin() -> None:  # pragma: nocover
+        """Install the systemd drop-in that allows chrony to run inside containers."""
+        for source, dest in _chrony_files().items():
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(source, dest)
+            os.chmod(dest, 0o644)
+        systemd.daemon_reload()
+        systemd.service_restart("chrony")
+
+    @staticmethod
+    def _uninstall_chrony_container_dropin() -> None:  # pragma: nocover
+        """Remove the systemd drop-in that allows chrony to run inside containers."""
+        for dest in _chrony_files().values():
+            dest.unlink(missing_ok=True)
+        systemd.daemon_reload()
 
     def read_config(self) -> str:
         """Read the current chrony configuration file.

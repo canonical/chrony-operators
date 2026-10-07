@@ -8,7 +8,7 @@
 
   @{run}/chrony/{,*} rw,
 
-  /usr/bin/chrony_exporter r,
+  /usr/bin/chrony_exporter mr,
 
   @{PROC}/*/limits r,
   @{PROC}/*/stat r,
