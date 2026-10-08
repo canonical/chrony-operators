@@ -17,6 +17,7 @@ classifiers = [
 ]
 dependencies = [
   "chrony-shared",
+  "cryptography==50.0.2",
 ]
 
 [dependency-groups]

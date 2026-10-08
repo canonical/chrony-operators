@@ -332,12 +332,14 @@ version = "0.0.0"
 source = { virtual = "chrony-operator" }
 dependencies = [
     { name = "chrony-shared" },
+    { name = "cryptography" },
     { name = "ops" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "chrony-shared", editable = "shared" },
+    { name = "cryptography", specifier = "==50.0.2" },
     { name = "ops", specifier = "==3.8.3" },
 ]
 
@@ -347,6 +349,7 @@ version = "0.0.0"
 source = { virtual = "." }
 dependencies = [
     { name = "chrony-shared" },
+    { name = "cryptography" },
 ]
 
 [package.dev-dependencies]
@@ -386,7 +389,10 @@ unit = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "chrony-shared", editable = "shared" }]
+requires-dist = [
+    { name = "chrony-shared", editable = "shared" },
+    { name = "cryptography", specifier = "==50.0.2" },
+]
 
 [package.metadata.requires-dev]
 coverage-report = [
@@ -427,7 +433,6 @@ version = "0.0.0"
 source = { editable = "shared" }
 dependencies = [
     { name = "cosl" },
-    { name = "cryptography" },
     { name = "jsonschema" },
     { name = "opentelemetry-api" },
     { name = "ops" },
@@ -437,7 +442,6 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "cosl", specifier = "==1.11.2" },
-    { name = "cryptography", specifier = "==50.0.2" },
     { name = "jsonschema", specifier = "==4.26.0" },
     { name = "opentelemetry-api", specifier = "==1.45.0" },
     { name = "ops", specifier = "==3.8.3" },
