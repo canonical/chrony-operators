@@ -12,7 +12,7 @@ import pytest
 import yaml
 from opcli.pytest_plugin import CharmPathList
 
-_CHARMCRAFT_YAML = pathlib.Path(__file__).parents[2] / "charmcraft.yaml"
+_CHARMCRAFT_YAML = pathlib.Path(__file__).parents[2] / "chrony-client-operator" / "charmcraft.yaml"
 _CODENAMES = {"22.04": "jammy", "24.04": "noble", "26.04": "resolute"}
 
 

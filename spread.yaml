@@ -29,18 +29,25 @@ exclude:
 - .venv
 - .*_cache
 integration-suites:
-  chrony-operator/tests/integration/:
+  tests/integration/chrony/:
     summary: chrony charm integration tests
-    working-dir: chrony-operator/
+    working-dir: ./
+    auto-discover: false
+    environment:
+      MODULE/test_chrony_charm: tests/integration/test_chrony_charm.py
+      MODULE/test_upgrade: tests/integration/test_upgrade.py
     backends:
     - integration-test
     systems: [ubuntu-26.04]
     pytest-arguments-template: &default-pytest-args |
       --model testing
       --keep-models
-  chrony-client-operator/tests/integration/:
+  tests/integration/chrony-client/:
     summary: chrony-client charm integration tests
-    working-dir: chrony-client-operator/
+    working-dir: ./
+    auto-discover: false
+    environment:
+      MODULE/test_chrony_client_charm: tests/integration/test_chrony_client_charm.py
     backends:
     - integration-test
     systems: [ubuntu-26.04, ubuntu-26.04-arm64, ubuntu-26.04-s390x, ubuntu-26.04-ppc64el]
