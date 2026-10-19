@@ -5,6 +5,8 @@
 
 """Integration tests."""
 
+import time
+
 import jubilant
 import pytest
 
@@ -57,6 +59,16 @@ def test_charm_uninstall_cleanup(juju, chrony_client_app, principle_app):
     """
     juju.remove_application(chrony_client_app.name)
     juju.wait(jubilant.all_active, timeout=20 * 60)
+    deadline = time.monotonic() + 5 * 60
+    while time.monotonic() < deadline:
+        cleaned_up = principle_app.ssh(
+            "if which chrony_exporter || grep -q charm /etc/chrony/chrony.conf"
+            " || test -e /etc/systemd/system/chrony.service.d/chrony-container.conf;"
+            " then echo no; else echo yes; fi"
+        )
+        if cleaned_up.strip().endswith("yes"):
+            break
+        time.sleep(5)
 
     with pytest.raises(jubilant.CLIError):
         principle_app.ssh("which chrony_exporter")
