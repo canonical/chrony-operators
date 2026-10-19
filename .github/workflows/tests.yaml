@@ -20,7 +20,7 @@ jobs:
   integration-test:
     uses: canonical/charm-ci/.github/workflows/integration-test.yml@main
     with:
-      spread-jobs-include: "integration-test-ci:*"
+      spread-jobs-include: "integration-test*-ci:*"
       build-timeout-minutes: 120
       test-timeout-minutes: 240
       charmcraft-channel: latest/edge

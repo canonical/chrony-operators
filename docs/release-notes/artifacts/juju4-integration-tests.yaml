@@ -1,0 +1,16 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+version_schema: 2
+changes:
+  - title: Added Juju 4 integration tests for the chrony and chrony-client charms
+    author: Weii Wang
+    type: minor
+    description: The chrony and chrony-client charm integration tests now also run against a Juju 4 controller on amd64, in addition to the existing Juju 3.6 tests.
+    urls:
+      pr:
+        - https://github.com/canonical/chrony-operators/pull/
+      related_doc:
+      related_issue:
+    visibility: internal
+    highlight: false

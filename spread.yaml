@@ -20,9 +20,19 @@ backends:
     - ubuntu-26.04-ppc64el:
         runner: [self-hosted-linux-ppc64el-resolute-medium]
         arch: ppc64el
+    environment:
+      CONCIERGE: concierge.yaml
+  integration-test-juju4:
+    type: integration-test
+    systems:
+    - ubuntu-26.04:
+        runner: [ubuntu-26.04]
+        arch: amd64
+    environment:
+      CONCIERGE: concierge-juju4.yaml
 environment:
   OPCLI_GIT_REF: '$(HOST: echo "${OPCLI_GIT_REF:-main}")'
-  CONCIERGE: concierge.yaml
+  CONCIERGE: '$(HOST: echo "${CONCIERGE:-concierge.yaml}")'
 exclude:
 - .git
 - .tox
@@ -38,6 +48,7 @@ integration-suites:
       MODULE/test_upgrade: tests/integration/test_upgrade.py
     backends:
     - integration-test
+    - integration-test-juju4
     systems: [ubuntu-26.04]
     pytest-arguments-template: &default-pytest-args |
       --model testing
@@ -50,5 +61,6 @@ integration-suites:
       MODULE/test_chrony_client_charm: tests/integration/test_chrony_client_charm.py
     backends:
     - integration-test
+    - integration-test-juju4
     systems: [ubuntu-26.04, ubuntu-26.04-arm64, ubuntu-26.04-s390x, ubuntu-26.04-ppc64el]
     pytest-arguments-template: *default-pytest-args
