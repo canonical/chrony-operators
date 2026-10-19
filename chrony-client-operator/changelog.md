@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-19
+
+* Added Juju 4 integration tests on amd64.
+
 ## 2026-10-05
 
 * Added support for the Ubuntu 26.04 LTS base and the arm64, s390x and
