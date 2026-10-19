@@ -84,7 +84,7 @@ class ChronyClientCharm(ops.CharmBase):
             dashboard_dirs=["./src/grafana_dashboards"],
         )
         self.framework.observe(self.on.install, self._do_install_and_config)
-        self.framework.observe(self.on.remove, self._on_remove)
+        self.framework.observe(self.on.stop, self._on_stop)
         self.framework.observe(self.on.upgrade_charm, self._do_install_and_config)
         self.framework.observe(self.on.config_changed, self._do_install_and_config)
 
@@ -98,8 +98,12 @@ class ChronyClientCharm(ops.CharmBase):
         else:
             self._set_lock_failure_status()
 
-    def _on_remove(self, _: ops.EventBase) -> None:
-        """Handle remove event."""
+    def _on_stop(self, _: ops.EventBase) -> None:
+        """Handle stop event.
+
+        Clean up in the stop hook rather than the remove hook, because Juju 4 deletes
+        a subordinate unit after it leaves the relation scope, before the remove hook runs.
+        """
         if self._try_acquire_chrony_lock():
             self.chrony.uninstall()
             self.chrony.restore_config()

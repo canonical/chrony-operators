@@ -3,6 +3,8 @@
 ## 2026-10-19
 
 * Added Juju 4 integration tests on amd64.
+* Moved the uninstall cleanup from the `remove` hook to the `stop` hook,
+  as Juju 4 does not run the `remove` hook for removed subordinate units.
 
 ## 2026-10-05
 
