@@ -3,6 +3,7 @@
 
 """Fixtures for charm integration tests."""
 
+import os
 import pathlib
 import platform
 import typing
@@ -58,6 +59,24 @@ def _app_suffix(base: str) -> str:
     return _CODENAMES.get(version, "base" + version.replace(".", ""))
 
 
+def _authorize_client_ssh_keys(juju: jubilant.Juju) -> None:
+    """Add the Juju client SSH keys to the model so that ``juju ssh`` works.
+
+    Juju 3 adds the client SSH key to every new model automatically, Juju 4 does not.
+
+    Args:
+        juju: Juju instance
+    """
+    if juju.version().major < 4:
+        return
+    juju_data = pathlib.Path(os.environ.get("JUJU_DATA", "~/.local/share/juju")).expanduser()
+    existing = juju.cli("ssh-keys", "--full")
+    for pub_key_file in sorted((juju_data / "ssh").glob("*.pub")):
+        key = pub_key_file.read_text(encoding="utf-8").strip()
+        if key.split()[1] not in existing:
+            juju.add_ssh_key(key)
+
+
 @pytest.fixture(name="juju", scope="module")
 def juju_fixture(request: pytest.FixtureRequest) -> typing.Generator[jubilant.Juju, None, None]:
     """Pytest fixture that wraps :meth:`jubilant.with_model`."""
@@ -70,6 +89,7 @@ def juju_fixture(request: pytest.FixtureRequest) -> typing.Generator[jubilant.Ju
     use_existing = request.config.getoption("--use-existing", default=False)
     if use_existing:
         juju = jubilant.Juju()
+        _authorize_client_ssh_keys(juju)
         yield juju
         show_debug_log(juju)
         return
@@ -77,12 +97,14 @@ def juju_fixture(request: pytest.FixtureRequest) -> typing.Generator[jubilant.Ju
     model = request.config.getoption("--model")
     if model:
         juju = jubilant.Juju(model=model)
+        _authorize_client_ssh_keys(juju)
         yield juju
         show_debug_log(juju)
         return
 
     keep_models = typing.cast(bool, request.config.getoption("--keep-models"))
     with jubilant.temp_model(keep=keep_models) as juju:
+        _authorize_client_ssh_keys(juju)
         juju.wait_timeout = 10 * 60
         yield juju
         show_debug_log(juju)

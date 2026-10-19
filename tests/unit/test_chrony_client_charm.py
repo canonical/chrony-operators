@@ -171,7 +171,7 @@ def test_chrony_config(sources: str, valid: bool, source_config: str, mock_chron
 def test_chrony_uninstall(mock_chrony):
     """
     arrange: run the `config-changed` event
-    act: trigger the 'remove' event.
+    act: trigger the 'stop' event.
     assert: check if configuration file content and packages are restored.
     """
     mock_chrony.write_config("default")
@@ -188,7 +188,7 @@ def test_chrony_uninstall(mock_chrony):
         config={"sources": "ntp://example.com"},
         relations=[testing.SubordinateRelation(endpoint="juju-info", id=1)],
     )
-    ctx.run(ctx.on.remove(), state_in)
+    ctx.run(ctx.on.stop(), state_in)
 
     assert charm.ChronyClientCharm._read_chrony_lock_file() is None
     assert mock_chrony.read_config() == "default"

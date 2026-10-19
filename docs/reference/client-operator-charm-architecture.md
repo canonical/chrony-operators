@@ -74,12 +74,11 @@ event, the Chrony client charm will update the configuration of `chrony`
 and may restart the `chrony` service if the configuration has changed.
 See the documentation on the [`config-changed` event](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#config-changed).
 
-### `remove`
-The `remove` event is emitted only once per unit: when the Juju controller
-is ready to remove the unit completely. All necessary steps for handling
-removal should be handled there. During this event, the Chrony client 
-charm remove some installed packages and reset the chrony configuration
-back to default. See the documentation on the [`remove` event](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#remove).
+### `stop`
+The `stop` event is emitted when the unit is being removed, before the
+`remove` event. During this event, the Chrony client charm removes some
+installed packages and resets the chrony configuration back to default.
+See the documentation on the [`stop` event](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#stop).
 
 ## Charm code overview
 
