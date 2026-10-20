@@ -1,0 +1,16 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+version_schema: 2
+changes:
+  - title: Added Ubuntu 26.04, arm64, s390x and ppc64el support to the chrony-client charm
+    author: Weii Wang
+    type: minor
+    description: The chrony-client charm now builds for the ubuntu@26.04 base and the arm64, s390x and ppc64el architectures on all supported bases, in addition to the existing ubuntu@22.04 and ubuntu@24.04 amd64 platforms.
+    urls:
+      pr:
+        - https://github.com/canonical/chrony-operators/pull/36
+      related_doc:
+      related_issue:
+    visibility: public
+    highlight: false

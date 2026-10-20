@@ -1,0 +1,45 @@
+groups:
+  - name: chrony
+    rules:
+      - alert: ChronyTargetMissing
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Prometheus target missing (instance {{ $labels.instance }})
+          description: |
+            Chrony target has disappeared. An exporter on {{ $labels.instance }}
+            might be crashed.
+      - alert: ChronyTrackingHighOffset
+        expr: chrony_tracking_last_offset_seconds > 1
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: "Chrony tracking offset is high ({{ $value }}s)"
+          description: |
+            The last clock offset reported by Chrony on {{ $labels.instance }}
+            has been {{ $value }} seconds, exceeding the 1 s threshold for over 1 hour.
+      - alert: ChronyTrackingStaleMeasurement
+        expr: chrony_tracking_update_interval_seconds > 28800
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: "Chrony update interval is too long ({{ $value }}s)"
+          description: |
+            Chrony on {{ $labels.instance }} has not processed a new measurement
+            for over 30 minutes. The current update interval is {{ $value }} seconds,
+            exceeding the 8h threshold for more than 1 hour.
+      - alert: ChronyHighStratum
+        expr: chrony_tracking_stratum > 3
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Chrony tracking stratum is too high ({{ $value }})"
+          description: |
+            Chrony on instance {{ $labels.instance }} is tracking a source with
+            stratum {{ $value }}, which is above the acceptable threshold of 3 for
+            over 1 hour.

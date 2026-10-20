@@ -2,36 +2,65 @@
 # See LICENSE file for licensing details.
 project: chrony-operators
 path: /home/ubuntu/proj
-kill-timeout: 60m
+kill-timeout: 180m
 warn-timeout: 1m
 backends:
   integration-test:
     type: integration-test
     systems:
-    - ubuntu-24.04:
-        runner: [self-hosted, linux, X64, noble, large]
+    - ubuntu-26.04:
+        runner: [ubuntu-26.04]
+        arch: amd64
+    - ubuntu-26.04-arm64:
+        runner: [ubuntu-26.04-arm]
+        arch: arm64
+    - ubuntu-26.04-s390x:
+        runner: [self-hosted-linux-s390x-resolute-medium]
+        arch: s390x
+    - ubuntu-26.04-ppc64el:
+        runner: [self-hosted-linux-ppc64el-resolute-medium]
+        arch: ppc64el
+    environment:
+      CONCIERGE: concierge.yaml
+  integration-test-juju4:
+    type: integration-test
+    systems:
+    - ubuntu-26.04:
+        runner: [ubuntu-26.04]
+        arch: amd64
+    environment:
+      CONCIERGE: concierge-juju4.yaml
 environment:
   OPCLI_GIT_REF: '$(HOST: echo "${OPCLI_GIT_REF:-main}")'
-  CONCIERGE: concierge.yaml
+  CONCIERGE: '$(HOST: echo "${CONCIERGE:-concierge.yaml}")'
 exclude:
 - .git
 - .tox
 - .venv
 - .*_cache
 integration-suites:
-  chrony-operator/tests/integration/:
+  tests/integration/chrony/:
     summary: chrony charm integration tests
-    working-dir: chrony-operator/
+    working-dir: ./
+    auto-discover: false
+    environment:
+      MODULE/test_chrony_charm: tests/integration/test_chrony_charm.py
+      MODULE/test_upgrade: tests/integration/test_upgrade.py
     backends:
     - integration-test
-    systems: [ubuntu-24.04]
+    - integration-test-juju4
+    systems: [ubuntu-26.04]
     pytest-arguments-template: &default-pytest-args |
       --model testing
       --keep-models
-  chrony-client-operator/tests/integration/:
+  tests/integration/chrony-client/:
     summary: chrony-client charm integration tests
-    working-dir: chrony-client-operator/
+    working-dir: ./
+    auto-discover: false
+    environment:
+      MODULE/test_chrony_client_charm: tests/integration/test_chrony_client_charm.py
     backends:
     - integration-test
-    systems: [ubuntu-24.04]
+    - integration-test-juju4
+    systems: [ubuntu-26.04, ubuntu-26.04-arm64, ubuntu-26.04-s390x, ubuntu-26.04-ppc64el]
     pytest-arguments-template: *default-pytest-args

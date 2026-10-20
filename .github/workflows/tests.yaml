@@ -5,14 +5,7 @@ on:
   pull_request:
 jobs:
   unit-tests:
-    strategy:
-      matrix:
-        charm:
-          - name: chrony
-            working-directory: ./chrony-operator
-          - name: chrony-client
-            working-directory: ./chrony-client-operator
-    name: Unit tests for ${{ matrix.charm.name }}
+    name: Unit tests
     uses: canonical/operator-workflows/.github/workflows/test.yaml@main
     permissions:
       contents: read
@@ -22,12 +15,17 @@ jobs:
       runs-on-base: ubuntu-24.04
       python-version: "3.12"
       self-hosted-runner: false
-      working-directory: ${{ matrix.charm.working-directory }}
+      working-directory: ./
       with-uv: true
   integration-test:
-    uses: canonical/charm-ci/.github/workflows/integration-test.yml@58ae6614a3b143d4e57eff0fd1770e97d8c30fab # v1.0.1
+    uses: canonical/charm-ci/.github/workflows/integration-test.yml@14b1cf49d48b9d5b96192d9bca2890c98b7295cf # v1.0.2
     with:
-      spread-jobs-include: "integration-test-ci:*"
+      spread-jobs-include: "integration-test*-ci:*"
+      build-timeout-minutes: 120
+      test-timeout-minutes: 240
+      charmcraft-channel: latest/edge
+      charmcraft-environments: |
+        CHARMCRAFT_EXPERIMENTAL_MONOREPO=1
     secrets: inherit
     permissions:
       contents: read
