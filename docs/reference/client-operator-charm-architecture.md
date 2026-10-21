@@ -1,3 +1,5 @@
+(reference_client_charm_architecture)=
+
 # Chrony client charm architecture
 
 At its core, the Chrony client charm installs and configures the 

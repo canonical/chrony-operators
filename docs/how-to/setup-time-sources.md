@@ -1,3 +1,5 @@
+(how_to_setup_time_sources)=
+
 # How to set up time sources
 
 Chrony alone cannot provide time; it requires another time source, either a 

@@ -1,3 +1,5 @@
+(reference_metrics)=
+
 ## Metrics
 
 - **`chrony_serverstats_authenticated_ntp_packets_total`**: The number of received NTP requests that were authenticated (with a symmetric key or NTS).

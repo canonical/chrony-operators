@@ -6,20 +6,6 @@
 How-to guides
 =============
 
-.. TODO: Update the name of the charm!
-         The following subsections are examples and don't need to be followed exactly.
-         Define themes and subsections based on the charm's unique needs and features.
-         Avoid subsections that only apply to a single page (creating an "orphan").
-         Select subsections where 2 or more pages apply.
-
-         Provide 1-2 sentence introductions for each subsection.
-         Avoid meta-documentation that describes the documentation itself
-         (e.g., "The following guides document..."). Try to focus explanatory
-         text on the purpose or value of the guides listed in the section.
-
-         More examples of subsections: Initial setup, Security
-
-
 Manage the full operations lifecycle of Chrony charms, from initial deployment
 through production maintenance.
 Each guide assumes that you've already deployed the charm with Juju.
@@ -30,7 +16,7 @@ Each guide assumes that you've already deployed the charm with Juju.
 Basic operations
 ----------------
 
-Once you've finished setting up the charm, now you can perform a number
+Once you've finished setting up the charm, you can perform a number
 of actions with your deployment. These guides provide instructions on
 basic operations you can complete with the charm.
 
@@ -43,11 +29,10 @@ basic operations you can complete with the charm.
     Use NTS <enable-nts>
 
 Update the charm
-------------------
+----------------
 
-Upgrades the charm when available ensure the
-Chrony charms stays current and benefits from new features
-and capabilities.
+Upgrade the charms when new revisions are available to ensure that the
+Chrony charms stay current and benefit from new features and capabilities.
 
 .. toctree::
     :hidden:
