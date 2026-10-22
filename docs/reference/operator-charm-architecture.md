@@ -1,3 +1,5 @@
+(reference_charm_architecture)=
+
 # Chrony charm architecture
 
 [Chrony](https://chrony-project.org/) is a Network Time Protocol (NTP) server for synchronizing system clock across systems.
