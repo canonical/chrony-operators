@@ -10,13 +10,13 @@ Chrony operators
 
 .. vale Canonical.007-Headings-sentence-case = YES
 
-A `Juju <https://juju.is/>`_ `charm <https://documentation.ubuntu.com/juju/3.6/reference/charm/>`_
+A set of `Juju <https://juju.is/>`_ `charms <https://documentation.ubuntu.com/juju/3.6/reference/charm/>`_
 deploying and managing Chrony as an NTP server or as an NTP client.
 
-Like any Juju charm, this charm supports one-line deployment, configuration, integration,
+Like any Juju charm, these charms support one-line deployment, configuration, integration,
 scaling, and more.
 
-For Chrony charms, this includes:
+For the Chrony charms, this includes:
 
 * Using Chrony as an NTP server using other time servers as time sources.
 * Using Chrony as an NTP client to synchronize time on the installed machines.

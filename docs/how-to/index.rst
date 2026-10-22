@@ -21,7 +21,6 @@ of actions with your deployment. These guides provide instructions on
 basic operations you can complete with the charm.
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Integrate with COS <integrate-with-cos>
@@ -35,7 +34,6 @@ Upgrade the charms when new revisions are available to ensure that the
 Chrony charms stay current and benefit from new features and capabilities.
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Upgrade <upgrade>
@@ -46,7 +44,6 @@ Development
 These guides can help you with troubleshooting and contributing to the project.
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Contribute <contribute>

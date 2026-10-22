@@ -20,7 +20,6 @@ Learn more about the available configurations, integrations, and metrics.
 .. vale Canonical.500-Repeated-words = NO
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Configurations <configurations>
@@ -34,7 +33,6 @@ Understand the overall charm architecture, including the components of the
 charm and the design of the charm code.
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Chrony charm architecture <operator-charm-architecture>

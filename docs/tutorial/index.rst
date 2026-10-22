@@ -13,7 +13,6 @@ experience as you get started with the charm.
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Deploy the Chrony charm as an NTP server for the first time <operator-tutorial>

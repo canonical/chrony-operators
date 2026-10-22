@@ -12,7 +12,6 @@ and concepts related to the Chrony charm.
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Security overview <security>
