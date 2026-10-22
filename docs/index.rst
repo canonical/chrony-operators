@@ -41,7 +41,7 @@ In this documentation
     * - Get started
       - :ref:`Chrony server tutorial <tutorial_operator>` | :ref:`Chrony client tutorial <tutorial_client_operator>`
     * - Operations
-      - :ref:`Config time sources <how_to_setup_time_sources>`  | :ref:`Enable NTS <how_to_enable_nts>`
+      - :ref:`Config time sources <how_to_setup_time_sources>`  | :ref:`Enable NTS <how_to_enable_nts>` | :ref:`Integrate with COS <how_to_integrate_with_cos>` | :ref:`Upgrade <how_to_upgrade>`
     * - Design
       - :ref:`Chrony charm architecture <reference_charm_architecture>` | :ref:`Chrony client charm architecture <reference_client_charm_architecture>`
     * - Security

@@ -27,23 +27,16 @@ basic operations you can complete with the charm.
     Configure time sources <setup-time-sources>
     Use NTS <enable-nts>
 
-Update the charm
-----------------
+Maintenance and development
+---------------------------
 
 Upgrade the charms when new revisions are available to ensure that the
 Chrony charms stay current and benefit from new features and capabilities.
+If you wish to add more features to the Chrony charms, or fix some bugs
+encountered during usage, you can also contribute to this project.
 
 .. toctree::
     :maxdepth: 1
 
     Upgrade <upgrade>
-
-Development
------------
-
-These guides can help you with troubleshooting and contributing to the project.
-
-.. toctree::
-    :maxdepth: 1
-
     Contribute <contribute>
