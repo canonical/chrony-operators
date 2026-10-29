@@ -26,13 +26,13 @@ fmt = [
 ]
 lint = [
   "codespell",
-  "coverage[toml]==7.16.2",
+  "coverage[toml]==7.17.0",
   "jubilant==1.14.0",
   "mypy",
   "ops[testing]==3.9.0",
   "pep8-naming",
   "pytest",
-  "pytest==9.1.1",
+  "pytest==9.2.0",
   "pytest-asyncio",
   "requests",
   "ruff",
@@ -40,9 +40,9 @@ lint = [
   "types-requests",
 ]
 unit = [
-  "coverage[toml]==7.16.2",
+  "coverage[toml]==7.17.0",
   "ops[testing]==3.9.0",
-  "pytest==9.1.1",
+  "pytest==9.2.0",
 ]
 coverage-report = [
   "coverage[toml]",
@@ -54,7 +54,7 @@ static = [
 integration = [
   "jubilant==1.14.0",
   "opcli ; python_version >= '3.12'",
-  "pytest==9.1.1",
+  "pytest==9.2.0",
 ]
 
 [tool.uv]
