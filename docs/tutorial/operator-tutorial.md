@@ -1,4 +1,6 @@
 <!-- vale Canonical.007-Headings-sentence-case = NO -->
+(tutorial_operator)=
+
 # Deploy the Chrony charm
 <!-- vale Canonical.007-Headings-sentence-case = YES -->
 
@@ -44,7 +46,7 @@ Machine  State    Address        Inst id        Base          AZ  Message
 We must configure a time source for the Chrony charm so it can serve time to 
 other NTP clients.
 In this example, we will use an upstream NTP server (ntp.ubuntu.com) 
-as the time source and set the iburst option to true for this source.
+as the time source and set the `iburst` option to true for this source.
 
 ```
 ubuntu@laptop:~$ juju config chrony "sources=ntp://ntp.ubuntu.com?iburst=true"

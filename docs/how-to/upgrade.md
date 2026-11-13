@@ -1,3 +1,5 @@
+(how_to_upgrade)=
+
 # How to upgrade
 
 Use the [`juju refresh` command](https://documentation.ubuntu.com/juju/latest/reference/juju-cli/list-of-juju-cli-commands/refresh/)

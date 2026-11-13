@@ -1,8 +1,8 @@
 # Chrony operators
 This repository provides a collection of operators related to the [Chrony](https://chrony-project.org) NTP service.
 This repository contains the code for the following charms:
-1. `chrony`: A machine charm that deploys and manages a Chrony NTP server. See the [chrony-operator README](chrony-operator/README.md) for more information.
-2. `chrony-client`: A subordinate machine charm that deploys and manages Chrony as an NTP client. See the [chrony-client-operator README](chrony-client-operator/README.md) for more information.
+1. `chrony`: A machine charm that deploys and manages a Chrony NTP server.
+2. `chrony-client`: A subordinate machine charm that deploys and manages Chrony as an NTP client.
 
 ## Charmhub
 
@@ -12,7 +12,7 @@ This repository contains the code for the following charms:
 | `chrony-client` | https://charmhub.io/chrony-client |
 
 ## Documentation
-Documentation for each charm is stored in its respective subdirectory's `docs` directory.
+Documentation for both charms is stored in the [`docs`](docs) directory.
 It is based on the Canonical starter pack and, in structuring, the documentation employs the
 [Diataxis](https://diataxis.fr/) approach.
 You may open a pull request with your documentation changes, or you can

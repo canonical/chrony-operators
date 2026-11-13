@@ -1,4 +1,6 @@
 <!-- vale Canonical.007-Headings-sentence-case = NO -->
+(tutorial_client_operator)=
+
 # Deploy the Chrony client charm
 <!-- vale Canonical.007-Headings-sentence-case = YES -->
 

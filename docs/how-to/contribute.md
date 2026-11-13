@@ -1,3 +1,5 @@
+(how_to_contribute)=
+
 # How to contribute
 
 Our documentation is hosted on the [Charmhub forum](https://charmhub.io/chrony-client)

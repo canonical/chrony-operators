@@ -1,4 +1,6 @@
 <!-- vale Canonical.007-Headings-sentence-case = NO -->
+(how_to_integrate_with_cos)=
+
 # How to integrate with COS
 <!-- vale Canonical.007-Headings-sentence-case = YES -->
 

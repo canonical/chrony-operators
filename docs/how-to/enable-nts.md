@@ -1,4 +1,6 @@
 <!-- vale Canonical.007-Headings-sentence-case = NO -->
+(how_to_enable_nts)=
+
 # How to enable Network Time Security
 <!-- vale Canonical.007-Headings-sentence-case = YES -->
 
